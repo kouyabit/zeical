@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  カラートークンはHSL値で定義（shadcn/ui方式）。
+  メインカラー #0F4C81 → hsl(206, 79%, 28%)
+  アクセント   #F39C12 → hsl(37, 90%, 51%)
+*/
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 215 28% 17%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
+
+    --primary: 206 79% 28%; /* #0F4C81 */
+    --primary-foreground: 0 0% 100%;
+
+    --accent: 37 90% 51%; /* #F39C12 */
+    --accent-foreground: 0 0% 100%;
+
+    --secondary: 206 40% 96%;
+    --secondary-foreground: 206 79% 28%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 206 79% 28%;
+
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
