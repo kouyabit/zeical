@@ -14,8 +14,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FieldShell } from "./field-shell";
+import { SliderField } from "./slider-field";
 import { FukugyoResultView } from "./fukugyo-result";
 import { sendGaEvent } from "@/lib/analytics";
+import { formatManYen } from "@/lib/utils";
 
 /**
  * 副業税金シミュレーター（入力フォーム＋結果表示）。
@@ -26,6 +28,7 @@ export function FukugyoSimulator() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<FukugyoFormValues, unknown, FukugyoFormOutput>({
     resolver: zodResolver(fukugyoFormSchema),
@@ -37,6 +40,9 @@ export function FukugyoSimulator() {
       sideIncomeType: "miscellaneous",
     },
   });
+
+  // スライダーで選んでいる本業の年収を画面に表示するために監視する
+  const watchedMainIncome = Number(watch("mainAnnualIncome"));
 
   const onSubmit = (values: FukugyoFormOutput) => {
     const calculated = calcFukugyoTax({
@@ -58,18 +64,16 @@ export function FukugyoSimulator() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <FieldShell
-              htmlFor="mainAnnualIncome"
+            <SliderField
+              id="mainAnnualIncome"
               label="本業の年収（額面）"
-              error={errors.mainAnnualIncome?.message}
-            >
-              <Input
-                id="mainAnnualIncome"
-                type="number"
-                inputMode="numeric"
-                {...register("mainAnnualIncome")}
-              />
-            </FieldShell>
+              min={1_000_000}
+              max={30_000_000}
+              step={10_000}
+              displayValue={formatManYen(watchedMainIncome)}
+              hint="つまみを左右に動かして1万円刻みで選べます（100万〜3,000万円）"
+              registration={register("mainAnnualIncome")}
+            />
 
             <FieldShell
               htmlFor="mainSocialInsurance"

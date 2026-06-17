@@ -16,3 +16,11 @@ export function formatYen(value: number): string {
   // 端数は四捨五入して整数の円で表示する
   return `${Math.round(value).toLocaleString("ja-JP")}円`;
 }
+
+/**
+ * 数値を「○○万円」表記（例: 500万円）にフォーマットする。
+ * スライダーで年収などを選んだときの見やすい表示に使う。
+ */
+export function formatManYen(value: number): string {
+  return `${Math.round(value / 10000).toLocaleString("ja-JP")}万円`;
+}
