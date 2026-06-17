@@ -14,10 +14,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FieldShell } from "./field-shell";
-import { SliderField } from "./slider-field";
+import { SelectField } from "./select-field";
 import { FurusatoResultView } from "./furusato-result";
 import { sendGaEvent } from "@/lib/analytics";
-import { formatManYen } from "@/lib/utils";
+import { buildNumberOptions, formatManYen } from "@/lib/utils";
+
+// ドロップダウンの選択肢（モジュール読み込み時に一度だけ作る）
+// 年収: 100万〜3,000万円を5万円刻み
+const INCOME_OPTIONS = buildNumberOptions(
+  1_000_000,
+  30_000_000,
+  50_000,
+  formatManYen,
+);
+// 扶養人数: 0〜10人を1人刻み
+const DEPENDENT_OPTIONS = buildNumberOptions(0, 10, 1, (n) => `${n}人`);
 
 /**
  * ふるさと納税控除上限額シミュレーター（入力フォーム＋結果表示）。
@@ -28,7 +39,6 @@ export function FurusatoSimulator() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<FurusatoFormValues, unknown, FurusatoFormOutput>({
     resolver: zodResolver(furusatoFormSchema),
@@ -41,11 +51,6 @@ export function FurusatoSimulator() {
       otherDeductions: 0,
     },
   });
-
-  // スライダーで選んでいる値を画面に表示するために監視する
-  const watchedIncome = Number(watch("annualIncome"));
-  const watchedGeneral = Number(watch("generalDependents"));
-  const watchedSpecific = Number(watch("specificDependents"));
 
   // 入力が正しいときに計算を実行し、結果を画面に反映する
   const onSubmit = (values: FurusatoFormOutput) => {
@@ -70,14 +75,11 @@ export function FurusatoSimulator() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <SliderField
+            <SelectField
               id="annualIncome"
               label="年収（額面）"
-              min={1_000_000}
-              max={30_000_000}
-              step={10_000}
-              displayValue={formatManYen(watchedIncome)}
-              hint="つまみを左右に動かして1万円刻みで選べます（100万〜3,000万円）"
+              options={INCOME_OPTIONS}
+              hint="ボーナス込みの年間給与収入を5万円刻みで選べます"
               registration={register("annualIncome")}
             />
 
@@ -108,27 +110,22 @@ export function FurusatoSimulator() {
               </label>
             </div>
 
-            <SliderField
-              id="generalDependents"
-              label="一般扶養（人）"
-              min={0}
-              max={10}
-              step={1}
-              displayValue={`${watchedGeneral}人`}
-              hint="16〜18歳・23〜69歳などの扶養親族の人数"
-              registration={register("generalDependents")}
-            />
-
-            <SliderField
-              id="specificDependents"
-              label="特定扶養 19〜22歳（人）"
-              min={0}
-              max={10}
-              step={1}
-              displayValue={`${watchedSpecific}人`}
-              hint="19〜22歳の扶養親族の人数"
-              registration={register("specificDependents")}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <SelectField
+                id="generalDependents"
+                label="一般扶養（人）"
+                options={DEPENDENT_OPTIONS}
+                hint="16〜18歳・23〜69歳など"
+                registration={register("generalDependents")}
+              />
+              <SelectField
+                id="specificDependents"
+                label="特定扶養 19〜22歳（人）"
+                options={DEPENDENT_OPTIONS}
+                hint="19〜22歳の扶養親族"
+                registration={register("specificDependents")}
+              />
+            </div>
 
             <FieldShell
               htmlFor="otherDeductions"

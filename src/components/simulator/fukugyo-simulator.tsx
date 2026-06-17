@@ -14,10 +14,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FieldShell } from "./field-shell";
-import { SliderField } from "./slider-field";
+import { SelectField } from "./select-field";
 import { FukugyoResultView } from "./fukugyo-result";
 import { sendGaEvent } from "@/lib/analytics";
-import { formatManYen } from "@/lib/utils";
+import { buildNumberOptions, formatManYen } from "@/lib/utils";
+
+// 金額の表示。0円のときだけ「0円」と出す（「0万円」だと不自然なため）
+const moneyLabel = (value: number) =>
+  value === 0 ? "0円" : formatManYen(value);
+
+// ドロップダウンの選択肢（モジュール読み込み時に一度だけ作る）
+// 本業の年収: 100万〜3,000万円を5万円刻み
+const MAIN_INCOME_OPTIONS = buildNumberOptions(
+  1_000_000,
+  30_000_000,
+  50_000,
+  formatManYen,
+);
+// 副業の収入・経費: 0〜1,000万円を1万円刻み
+const SIDE_AMOUNT_OPTIONS = buildNumberOptions(
+  0,
+  10_000_000,
+  10_000,
+  moneyLabel,
+);
 
 /**
  * 副業税金シミュレーター（入力フォーム＋結果表示）。
@@ -28,7 +48,6 @@ export function FukugyoSimulator() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<FukugyoFormValues, unknown, FukugyoFormOutput>({
     resolver: zodResolver(fukugyoFormSchema),
@@ -40,9 +59,6 @@ export function FukugyoSimulator() {
       sideIncomeType: "miscellaneous",
     },
   });
-
-  // スライダーで選んでいる本業の年収を画面に表示するために監視する
-  const watchedMainIncome = Number(watch("mainAnnualIncome"));
 
   const onSubmit = (values: FukugyoFormOutput) => {
     const calculated = calcFukugyoTax({
@@ -64,14 +80,11 @@ export function FukugyoSimulator() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <SliderField
+            <SelectField
               id="mainAnnualIncome"
               label="本業の年収（額面）"
-              min={1_000_000}
-              max={30_000_000}
-              step={10_000}
-              displayValue={formatManYen(watchedMainIncome)}
-              hint="つまみを左右に動かして1万円刻みで選べます（100万〜3,000万円）"
+              options={MAIN_INCOME_OPTIONS}
+              hint="本業の年間給与収入を5万円刻みで選べます"
               registration={register("mainAnnualIncome")}
             />
 
@@ -91,30 +104,20 @@ export function FukugyoSimulator() {
             </FieldShell>
 
             <div className="grid grid-cols-2 gap-4">
-              <FieldShell
-                htmlFor="sideRevenue"
+              <SelectField
+                id="sideRevenue"
                 label="副業の年間収入"
-                error={errors.sideRevenue?.message}
-              >
-                <Input
-                  id="sideRevenue"
-                  type="number"
-                  inputMode="numeric"
-                  {...register("sideRevenue")}
-                />
-              </FieldShell>
-              <FieldShell
-                htmlFor="sideExpenses"
+                options={SIDE_AMOUNT_OPTIONS}
+                hint="1万円刻み"
+                registration={register("sideRevenue")}
+              />
+              <SelectField
+                id="sideExpenses"
                 label="副業の必要経費"
-                error={errors.sideExpenses?.message}
-              >
-                <Input
-                  id="sideExpenses"
-                  type="number"
-                  inputMode="numeric"
-                  {...register("sideExpenses")}
-                />
-              </FieldShell>
+                options={SIDE_AMOUNT_OPTIONS}
+                hint="1万円刻み"
+                registration={register("sideExpenses")}
+              />
             </div>
 
             <FieldShell
