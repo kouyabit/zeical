@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { AdSenseScript } from "@/components/ads/adsense-script";
 import { siteConfig, SITE_URL } from "@/lib/site";
 
 // 日本語表示に最適化したフォント。CSS変数経由でTailwindから利用する
@@ -58,6 +59,7 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${notoSansJp.variable} font-sans`}>
         <GoogleAnalytics />
+        <AdSenseScript />
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">{children}</main>

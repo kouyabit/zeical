@@ -30,6 +30,22 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <Link
+                  href="/about"
+                  className="text-foreground hover:text-primary hover:underline"
+                >
+                  運営者情報・お問い合わせ
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/privacy"
+                  className="text-foreground hover:text-primary hover:underline"
+                >
+                  プライバシーポリシー
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
@@ -37,6 +53,16 @@ export function SiteFooter() {
         {/* 免責事項は税理士法対策としても重要なので必ず表示する */}
         <p className="mt-8 rounded-md bg-background p-4 text-xs leading-relaxed text-muted-foreground">
           {DISCLAIMER}
+        </p>
+
+        {/* 広告・アフィリエイト利用の明示（ステマ規制・AdSense要件への対応） */}
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          当サイトは、アフィリエイトプログラムおよびGoogle
+          AdSenseによる広告を掲載しています。詳しくは
+          <Link href="/privacy" className="underline hover:text-primary">
+            プライバシーポリシー
+          </Link>
+          をご覧ください。
         </p>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">

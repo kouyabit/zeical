@@ -24,3 +24,13 @@ export const siteConfig = {
 /** 全ページ共通で表示する免責事項 */
 export const DISCLAIMER =
   "本ツールの計算結果はあくまで目安です。正確な金額は最寄りの税務署または税理士にご確認ください。";
+
+/**
+ * 運営者情報。AdSenseの審査などで必要になるため、実際の情報に差し替えてください。
+ * 連絡先メールは環境変数 NEXT_PUBLIC_CONTACT_EMAIL でも設定できます。
+ */
+export const operatorInfo = {
+  name: "ZeiCal 運営事務局",
+  contactEmail:
+    process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "your-email@example.com",
+};

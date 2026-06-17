@@ -5,6 +5,7 @@ import { getArticleBySlug, getArticles } from "@/lib/articles";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from "@/lib/jsonld";
 import { DisclaimerNote } from "@/components/simulator/disclaimer-note";
+import { AdSlot } from "@/components/ads/ad-slot";
 
 interface PageProps {
   params: { slug: string };
@@ -73,6 +74,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           <p key={index}>{paragraph}</p>
         ))}
       </div>
+
+      {/* slot は AdSense で発行した広告ユニットIDに差し替えてください */}
+      <AdSlot slot="0000000000" />
 
       <DisclaimerNote />
     </article>

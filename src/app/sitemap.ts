@@ -12,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/furusato`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/fukugyo`, changeFrequency: "monthly", priority: 0.9 },
     { url: `${SITE_URL}/articles`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${SITE_URL}/about`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${SITE_URL}/privacy`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   // 記事ページのURLを動的に追加する

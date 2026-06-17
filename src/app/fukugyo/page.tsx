@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { FukugyoSimulator } from "@/components/simulator/fukugyo-simulator";
+import { RecommendedOffers } from "@/components/affiliate/recommended-offers";
+import { AdSlot } from "@/components/ads/ad-slot";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildSimulatorJsonLd, buildBreadcrumbJsonLd } from "@/lib/jsonld";
 
@@ -43,6 +45,15 @@ export default function FukugyoPage() {
       </header>
 
       <FukugyoSimulator />
+
+      <RecommendedOffers
+        category="tax-software"
+        title="確定申告がラクになる会計ソフト"
+      />
+      <RecommendedOffers category="side-job" title="副業を始めるなら" />
+
+      {/* slot は AdSense で発行した広告ユニットIDに差し替えてください */}
+      <AdSlot slot="0000000000" />
     </div>
   );
 }
