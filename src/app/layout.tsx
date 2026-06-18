@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { AdSenseScript } from "@/components/ads/adsense-script";
+import { StickyBottomAd } from "@/components/ads/sticky-bottom-ad";
 import { siteConfig, SITE_URL } from "@/lib/site";
 
 // 日本語表示に最適化したフォント。CSS変数経由でTailwindから利用する
@@ -65,6 +66,8 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <SiteFooter />
         </div>
+        {/* 画面下部に固定する広告枠。slot は発行した広告ユニットIDに差し替える */}
+        <StickyBottomAd slot="0000000000" />
       </body>
     </html>
   );

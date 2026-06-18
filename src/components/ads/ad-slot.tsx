@@ -15,13 +15,20 @@ interface AdSlotProps {
   /** AdSense管理画面で発行した広告ユニットのスロットID */
   slot: string;
   className?: string;
+  /** 広告未設定時に表示するプレースホルダーの説明文 */
+  placeholderLabel?: string;
 }
 
 /**
  * 広告枠（1つ分のバナー）を表示するコンポーネント。
- * パブリッシャーIDが未設定なら何も表示しない。
+ * パブリッシャーID（NEXT_PUBLIC_ADSENSE_CLIENT）が設定されていれば本物の広告を、
+ * 未設定なら「枠の位置がわかるプレースホルダー」を表示する。
  */
-export function AdSlot({ slot, className }: AdSlotProps) {
+export function AdSlot({
+  slot,
+  className,
+  placeholderLabel = "広告スペース",
+}: AdSlotProps) {
   // ページ表示後に広告の読み込みを依頼する
   useEffect(() => {
     if (!ADSENSE_CLIENT) return;
@@ -32,7 +39,16 @@ export function AdSlot({ slot, className }: AdSlotProps) {
     }
   }, []);
 
-  if (!ADSENSE_CLIENT) return null;
+  // AdSense未設定のときは、配置を確認できるプレースホルダーを表示する
+  if (!ADSENSE_CLIENT) {
+    return (
+      <div className={cn("my-8", className)}>
+        <div className="flex min-h-[72px] items-center justify-center rounded-md border border-dashed border-border bg-muted/40 px-4 text-center text-xs text-muted-foreground">
+          {placeholderLabel}（AdSense設定後にここへ広告が表示されます）
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn("my-8 text-center", className)}>

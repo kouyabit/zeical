@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { FieldShell } from "./field-shell";
 import { SelectField } from "./select-field";
 import { FurusatoResultView } from "./furusato-result";
+import { AdSlot } from "@/components/ads/ad-slot";
 import { sendGaEvent } from "@/lib/analytics";
 import { buildNumberOptions, formatManYen } from "@/lib/utils";
 
@@ -150,7 +151,11 @@ export function FurusatoSimulator() {
 
       <div>
         {result ? (
-          <FurusatoResultView result={result} />
+          <>
+            <FurusatoResultView result={result} />
+            {/* 計算実行後に表示される広告枠 */}
+            <AdSlot slot="0000000000" placeholderLabel="計算結果の広告枠" />
+          </>
         ) : (
           <Card className="flex h-full items-center justify-center border-dashed">
             <p className="p-8 text-center text-sm text-muted-foreground">
