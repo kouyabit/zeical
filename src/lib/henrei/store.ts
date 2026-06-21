@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase";
 import seedItems from "@/data/henrei-seed.json";
 import { calcReturnRate } from "./return-rate";
+import { isNextBuildPhase } from "./constants";
 import { fetchAllHenreiFromRakuten } from "./rakuten-api";
 
 /** シードデータを型安全に読み込む */
@@ -58,13 +59,27 @@ const getCachedRakutenItems = unstable_cache(
   { revalidate: 86400, tags: ["henrei"] },
 );
 
+/** 同時リクエストが1本の楽天API取得にまとまるようにする */
+let rakutenFetchInflight: Promise<HenreiItem[] | null> | null = null;
+
 async function fetchFromRakuten(): Promise<HenreiItem[] | null> {
   if (!process.env.RAKUTEN_APP_ID || !process.env.RAKUTEN_ACCESS_KEY) {
     return null;
   }
-  const items = await getCachedRakutenItems();
-  if (!items.length) return null;
-  return items.map(normalizeItem);
+  // ビルド時は数百ページが並列生成され、楽天APIの1秒1回制限を超えるためスキップ
+  if (isNextBuildPhase()) {
+    return null;
+  }
+
+  if (!rakutenFetchInflight) {
+    rakutenFetchInflight = getCachedRakutenItems()
+      .then((items) => (items.length ? items.map(normalizeItem) : null))
+      .finally(() => {
+        rakutenFetchInflight = null;
+      });
+  }
+
+  return rakutenFetchInflight;
 }
 
 /** 全返礼品を取得（Supabase → 楽天API → シードの順） */

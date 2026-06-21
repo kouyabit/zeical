@@ -40,6 +40,14 @@ export const RAKUTEN_API_MIN_INTERVAL_MS = 1000;
 /** ふるさと納税キーワード（楽天API検索用） */
 export const RAKUTEN_SEARCH_KEYWORD = "ふるさと納税";
 
+/** 429/503 時の最大リトライ回数 */
+export const RAKUTEN_API_MAX_RETRIES = 3;
+
+/** Next.js の静的ビルド中か（並列生成で楽天APIレート制限に当たるためAPIは呼ばない） */
+export function isNextBuildPhase(): boolean {
+  return process.env.NEXT_PHASE === "phase-production-build";
+}
+
 export function getCategoryBySlug(slug: string): HenreiCategory | undefined {
   return HENREI_CATEGORIES.find((c) => c.slug === slug);
 }

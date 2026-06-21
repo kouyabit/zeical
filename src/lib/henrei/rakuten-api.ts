@@ -1,6 +1,8 @@
 import type { HenreiItem } from "@/types/henrei";
 import { SITE_URL } from "@/lib/site";
 import {
+  isNextBuildPhase,
+  RAKUTEN_API_MAX_RETRIES,
   RAKUTEN_API_MIN_INTERVAL_MS,
   RAKUTEN_SEARCH_KEYWORD,
 } from "./constants";
@@ -143,18 +145,57 @@ function normalizeRakutenItems(
   return items as RakutenApiItem[];
 }
 
-/** 1秒1リクエスト制限を守るための待機 */
+/** 1秒1リクエスト制限を守るための待機（同一プロセス内の並列呼び出しも直列化） */
 let lastRequestAt = 0;
+let rateLimitChain: Promise<void> = Promise.resolve();
 
-async function waitForRateLimit(): Promise<void> {
-  const now = Date.now();
-  const elapsed = now - lastRequestAt;
-  if (elapsed < RAKUTEN_API_MIN_INTERVAL_MS) {
-    await new Promise((resolve) =>
-      setTimeout(resolve, RAKUTEN_API_MIN_INTERVAL_MS - elapsed),
-    );
+function waitForRateLimit(): Promise<void> {
+  rateLimitChain = rateLimitChain.then(async () => {
+    const now = Date.now();
+    const elapsed = now - lastRequestAt;
+    if (elapsed < RAKUTEN_API_MIN_INTERVAL_MS) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, RAKUTEN_API_MIN_INTERVAL_MS - elapsed),
+      );
+    }
+    lastRequestAt = Date.now();
+  });
+  return rateLimitChain;
+}
+
+/** 429/503 のとき待ってから再試行する */
+async function fetchRakutenSearch(
+  url: string,
+  referer: string,
+): Promise<RakutenSearchResponse | null> {
+  for (let attempt = 0; attempt <= RAKUTEN_API_MAX_RETRIES; attempt++) {
+    await waitForRateLimit();
+
+    const res = await fetch(url, {
+      next: { revalidate: 0 },
+      headers: buildRakutenHeaders(referer),
+    });
+
+    if (res.status === 429 || res.status === 503) {
+      const waitMs = RAKUTEN_API_MIN_INTERVAL_MS * (attempt + 1);
+      console.warn(
+        `[rakuten-api] ${res.status}, retry in ${waitMs}ms (attempt ${attempt + 1}/${RAKUTEN_API_MAX_RETRIES})`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+      continue;
+    }
+
+    if (!res.ok) {
+      const body = await res.text();
+      console.error("[rakuten-api] HTTP error:", res.status, body);
+      return null;
+    }
+
+    return (await res.json()) as RakutenSearchResponse;
   }
-  lastRequestAt = Date.now();
+
+  console.error("[rakuten-api] rate limit / unavailable after retries");
+  return null;
 }
 
 /** カテゴリslugから検索キーワードを推定 */
@@ -187,8 +228,6 @@ export async function searchRakutenHenreiItems(options: {
     return [];
   }
 
-  await waitForRateLimit();
-
   const extraKeyword = options.categorySlug
     ? categoryKeyword(options.categorySlug)
     : "";
@@ -216,17 +255,9 @@ export async function searchRakutenHenreiItems(options: {
 
   try {
     const referer = `${SITE_URL}/`;
-    const res = await fetch(url, {
-      next: { revalidate: 0 },
-      headers: buildRakutenHeaders(referer),
-    });
-    if (!res.ok) {
-      const body = await res.text();
-      console.error("[rakuten-api] HTTP error:", res.status, body);
-      return [];
-    }
+    const json = await fetchRakutenSearch(url, referer);
+    if (!json) return [];
 
-    const json = (await res.json()) as RakutenSearchResponse;
     if (json.errors?.errorMessage) {
       console.error(
         "[rakuten-api] API error:",
@@ -313,6 +344,10 @@ function inferCategorySlug(name: string): string {
 
 /** 全カテゴリ分を順次取得（日次バッチ用） */
 export async function fetchAllHenreiFromRakuten(): Promise<HenreiItem[]> {
+  if (isNextBuildPhase()) {
+    return [];
+  }
+
   const categories = [
     "wagyu",
     "rice",
