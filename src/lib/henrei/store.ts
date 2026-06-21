@@ -54,7 +54,7 @@ async function fetchFromSupabase(): Promise<HenreiItem[] | null> {
 /** 楽天APIから取得（24時間キャッシュ。Supabase未設定時の本番データ源） */
 const getCachedRakutenItems = unstable_cache(
   async () => fetchAllHenreiFromRakuten(),
-  ["henrei-rakuten-all"],
+  ["henrei-rakuten-all-v2"],
   { revalidate: 86400, tags: ["henrei"] },
 );
 

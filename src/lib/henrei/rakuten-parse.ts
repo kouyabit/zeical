@@ -1,5 +1,33 @@
 import { RETURN_GIFT_RATE_LIMIT_PERCENT } from "./constants";
 
+/** formatVersion=2 は URL文字列配列、v1 は { imageUrl } 配列で返る */
+type RakutenImageEntry = string | { imageUrl?: string };
+
+/** 楽天APIの画像配列から表示用URLを1件取り出す（v1/v2両対応） */
+export function resolveRakutenImageUrl(
+  mediumImageUrls?: RakutenImageEntry[],
+  smallImageUrls?: RakutenImageEntry[],
+): string {
+  const raw =
+    pickFirstRakutenImageUrl(mediumImageUrls) ??
+    pickFirstRakutenImageUrl(smallImageUrls);
+  if (!raw) return "";
+  // カード表示向けに128pxサムネを300px相当へ拡大
+  return raw.replace(/_ex=\d+x\d+/i, "_ex=300x300");
+}
+
+function pickFirstRakutenImageUrl(
+  urls?: RakutenImageEntry[],
+): string | null {
+  if (!urls?.length) return null;
+  const first = urls[0];
+  if (typeof first === "string" && first.startsWith("http")) return first;
+  if (first && typeof first === "object" && first.imageUrl?.startsWith("http")) {
+    return first.imageUrl;
+  }
+  return null;
+}
+
 /** テキストから「○○円」「○万円」の金額をすべて抽出 */
 export function extractYenAmounts(text: string): number[] {
   const amounts = new Set<number>();

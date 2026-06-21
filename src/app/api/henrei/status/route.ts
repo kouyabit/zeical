@@ -15,6 +15,7 @@ export async function GET() {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   );
 
+  const hasAffiliateId = Boolean(process.env.RAKUTEN_AFFILIATE_ID);
   const rakutenTest = await testRakutenConnection();
   const items = await getHenreiItems();
   const isSeedData = items.some((item) => item.id.startsWith("furusato-"));
@@ -24,6 +25,7 @@ export async function GET() {
     env: {
       rakutenAppId: hasAppId,
       rakutenAccessKey: hasAccessKey,
+      rakutenAffiliateId: hasAffiliateId,
       supabase: hasSupabase,
     },
     rakuten: rakutenTest,
@@ -31,6 +33,7 @@ export async function GET() {
       itemCount: items.length,
       source: isSeedData ? "seed" : "live",
       sampleName: items[0]?.name ?? null,
+      sampleImageUrl: items[0]?.imageUrl ?? null,
     },
     fixHints:
       rakutenTest.errorCode === "HTTP_REFERRER_NOT_ALLOWED"

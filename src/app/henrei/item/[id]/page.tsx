@@ -10,6 +10,7 @@ import { ReturnRateBadge } from "@/components/henrei/return-rate-badge";
 import { PortalButtons } from "@/components/henrei/portal-buttons";
 import { HenreiDisclaimer } from "@/components/henrei/henrei-disclaimer";
 import { FurusatoCta } from "@/components/henrei/furusato-cta";
+import { HenreiItemImage } from "@/components/henrei/henrei-item-image";
 import { buildPortalLinks } from "@/lib/henrei/affiliate-urls";
 import { RETURN_RATE_EXPLANATION } from "@/lib/henrei/return-rate";
 import { getHenreiItems, getHenreiItemById } from "@/lib/henrei/store";
@@ -76,12 +77,7 @@ export default async function HenreiItemPage({ params }: PageProps) {
         </header>
 
         <div className="mb-6 aspect-video overflow-hidden rounded-lg bg-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={item.imageUrl}
-            alt={item.name}
-            className="h-full w-full object-cover"
-          />
+          <HenreiItemImage src={item.imageUrl} alt={item.name} loading="eager" />
         </div>
 
         <p className="mb-6 leading-relaxed text-foreground">

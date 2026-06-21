@@ -5,6 +5,7 @@ import type { HenreiItem } from "@/types/henrei";
 import { formatYen } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ReturnRateBadge } from "./return-rate-badge";
+import { HenreiItemImage } from "./henrei-item-image";
 
 interface HenreiItemCardProps {
   item: HenreiItem;
@@ -32,13 +33,7 @@ export function HenreiItemCard({ item, rank }: HenreiItemCardProps) {
         </CardHeader>
         <CardContent>
           <div className="mb-3 aspect-[4/3] overflow-hidden rounded-md bg-muted">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={item.imageUrl}
-              alt={item.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
+            <HenreiItemImage src={item.imageUrl} alt={item.name} />
           </div>
           <dl className="space-y-1 text-xs">
             <div className="flex justify-between">

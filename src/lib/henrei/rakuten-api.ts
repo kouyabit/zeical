@@ -9,6 +9,7 @@ import {
   inferPrefectureSlug,
   resolveDonationAmount,
   resolveMunicipalityName,
+  resolveRakutenImageUrl,
 } from "./rakuten-parse";
 import { calcReturnRate } from "./return-rate";
 
@@ -25,8 +26,10 @@ interface RakutenApiItem {
   itemName: string;
   itemPrice: number;
   itemUrl: string;
+  affiliateUrl?: string;
   itemCaption?: string;
-  mediumImageUrls?: { imageUrl: string }[];
+  mediumImageUrls?: Array<string | { imageUrl?: string }>;
+  smallImageUrls?: Array<string | { imageUrl?: string }>;
   shopName: string;
   reviewAverage?: number;
   reviewCount?: number;
@@ -268,14 +271,17 @@ function mapRakutenItemToHenrei(item: RakutenApiItem): HenreiItem | null {
     id: item.itemCode.replace(":", "-"),
     name: item.itemName,
     description: item.catchcopy ?? `${item.shopName}のふるさと納税返礼品`,
-    imageUrl: item.mediumImageUrls?.[0]?.imageUrl ?? "",
+    imageUrl: resolveRakutenImageUrl(
+      item.mediumImageUrls,
+      item.smallImageUrls,
+    ),
     donationAmount,
     marketPrice,
     returnRate,
     categorySlug: inferCategorySlug(item.itemName),
     prefectureSlug: inferPrefectureSlug(item.shopName, item.itemName),
     municipalityName: resolveMunicipalityName(item.shopName, item.itemName),
-    rakutenItemUrl: item.itemUrl,
+    rakutenItemUrl: item.affiliateUrl || item.itemUrl,
     reviewAverage,
     reviewCount,
     popularityScore: Math.round(reviewAverage * reviewCount),

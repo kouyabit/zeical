@@ -4,6 +4,7 @@ import {
   extractYenAmounts,
   inferPrefectureSlug,
   resolveDonationAmount,
+  resolveRakutenImageUrl,
 } from "./rakuten-parse";
 
 describe("resolveDonationAmount", () => {
@@ -33,6 +34,25 @@ describe("extractMarketPriceFromText", () => {
   it("3割ルールを大きく超える金額は除外する", () => {
     const text = "通常 20,000円";
     expect(extractMarketPriceFromText(text, 10000)).toBeNull();
+  });
+});
+
+describe("resolveRakutenImageUrl", () => {
+  const sampleUrl =
+    "https://thumbnail.image.rakuten.co.jp/@0_mall/shop/cabinet/img.jpg?_ex=128x128";
+
+  it("formatVersion=2（文字列配列）からURLを取り出す", () => {
+    expect(resolveRakutenImageUrl([sampleUrl])).toContain("_ex=300x300");
+  });
+
+  it("formatVersion=1（オブジェクト配列）からURLを取り出す", () => {
+    expect(
+      resolveRakutenImageUrl([{ imageUrl: sampleUrl }]),
+    ).toContain("_ex=300x300");
+  });
+
+  it("medium が空なら smallImageUrls にフォールバックする", () => {
+    expect(resolveRakutenImageUrl([], [sampleUrl])).toContain("_ex=300x300");
   });
 });
 
