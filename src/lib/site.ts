@@ -16,6 +16,7 @@ export const siteConfig = {
   // ヘッダーのナビゲーションリンク
   nav: [
     { title: "ふるさと納税シミュレーター", href: "/furusato" },
+    { title: "返礼品ナビ", href: "/henrei" },
     { title: "副業税金シミュレーター", href: "/fukugyo" },
     { title: "記事一覧", href: "/articles" },
   ],

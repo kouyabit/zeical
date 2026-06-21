@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Gift, Briefcase, ShieldCheck } from "lucide-react";
+import { ArrowRight, Gift, Briefcase, ShieldCheck, Search } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -46,14 +46,20 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2つのシミュレーター紹介 */}
+      {/* シミュレーター・返礼品ナビ紹介 */}
       <section className="container py-14">
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-3">
           <SimulatorCard
             href="/furusato"
             icon={<Gift className="h-7 w-7" aria-hidden="true" />}
             title="ふるさと納税シミュレーター"
             description="年収や家族構成から、自己負担2,000円で寄付できる控除上限額の目安をすぐに確認できます。"
+          />
+          <SimulatorCard
+            href="/henrei"
+            icon={<Search className="h-7 w-7" aria-hidden="true" />}
+            title="返礼品ナビ"
+            description="還元率・人気度・寄付額帯でふるさと納税の返礼品を横断検索。上限額に合う返礼品が見つかります。"
           />
           <SimulatorCard
             href="/fukugyo"

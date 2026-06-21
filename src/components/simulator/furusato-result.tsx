@@ -1,9 +1,11 @@
+import Link from "next/link";
 import type { FurusatoResult } from "@/types/tax";
-import { formatYen } from "@/lib/utils";
+import { formatYen, cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { ResultBarChart } from "./result-bar-chart";
 import { DisclaimerNote } from "./disclaimer-note";
-import { AffiliateLink } from "@/components/affiliate/affiliate-link";
+import { buttonVariants } from "@/components/ui/button";
+import { HENREI_PRICE_TIERS, findNearestPriceTier } from "@/lib/henrei/constants";
 import { FURUSATO_SELF_PAYMENT } from "@/lib/calculations/constants";
 
 interface FurusatoResultViewProps {
@@ -69,15 +71,14 @@ export function FurusatoResultView({ result }: FurusatoResultViewProps) {
 
         {result.donationLimit > 0 && (
           <div className="mt-6 text-center">
-            <AffiliateLink
-              href="https://example.com/furusato"
-              provider="furusato-portal"
-              asButton
+            <Link
+              href={`/henrei/price/${findNearestPriceTier(result.donationLimit, HENREI_PRICE_TIERS)}`}
+              className={cn(buttonVariants({ variant: "cta", size: "lg" }))}
             >
-              お得な返礼品を探す
-            </AffiliateLink>
+              上限額に合う返礼品を探す
+            </Link>
             <p className="mt-2 text-xs text-muted-foreground">
-              ※広告（提携サイトへ移動します）
+              控除上限額に近い寄付額帯の返礼品一覧へ移動します
             </p>
           </div>
         )}
