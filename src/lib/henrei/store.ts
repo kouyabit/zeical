@@ -1,7 +1,9 @@
 import type { HenreiItem } from "@/types/henrei";
+import { unstable_cache } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase";
 import seedItems from "@/data/henrei-seed.json";
 import { calcReturnRate } from "./return-rate";
+import { fetchAllHenreiFromRakuten } from "./rakuten-api";
 
 /** シードデータを型安全に読み込む */
 const fallbackItems: HenreiItem[] = (seedItems as HenreiItem[]).map(normalizeItem);
@@ -49,10 +51,31 @@ async function fetchFromSupabase(): Promise<HenreiItem[] | null> {
   );
 }
 
-/** 全返礼品を取得 */
+/** 楽天APIから取得（24時間キャッシュ。Supabase未設定時の本番データ源） */
+const getCachedRakutenItems = unstable_cache(
+  async () => fetchAllHenreiFromRakuten(),
+  ["henrei-rakuten-all"],
+  { revalidate: 86400, tags: ["henrei"] },
+);
+
+async function fetchFromRakuten(): Promise<HenreiItem[] | null> {
+  if (!process.env.RAKUTEN_APP_ID || !process.env.RAKUTEN_ACCESS_KEY) {
+    return null;
+  }
+  const items = await getCachedRakutenItems();
+  if (!items.length) return null;
+  return items.map(normalizeItem);
+}
+
+/** 全返礼品を取得（Supabase → 楽天API → シードの順） */
 export async function getHenreiItems(): Promise<HenreiItem[]> {
   const fromDb = await fetchFromSupabase();
-  return fromDb ?? fallbackItems;
+  if (fromDb?.length) return fromDb;
+
+  const fromRakuten = await fetchFromRakuten();
+  if (fromRakuten?.length) return fromRakuten;
+
+  return fallbackItems;
 }
 
 /** IDで1件取得 */

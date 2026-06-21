@@ -24,6 +24,9 @@ export async function generateStaticParams() {
   return items.map((item) => ({ id: item.id }));
 }
 
+/** ビルド後に追加された返礼品IDも表示できるようにする */
+export const dynamicParams = true;
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const item = await getHenreiItemById(params.id);
   if (!item) return { title: "返礼品詳細" };

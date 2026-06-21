@@ -1,4 +1,5 @@
 import type { HenreiItem } from "@/types/henrei";
+import { SITE_URL } from "@/lib/site";
 import {
   RAKUTEN_API_MIN_INTERVAL_MS,
   RAKUTEN_SEARCH_KEYWORD,
@@ -36,8 +37,95 @@ interface RakutenApiItem {
 interface RakutenSearchResponse {
   Items?: RakutenApiItem[] | { Item: RakutenApiItem }[];
   pageCount?: number;
+  count?: number;
   error?: string;
   error_description?: string;
+  errors?: { errorCode?: number | string; errorMessage?: string };
+}
+
+export interface RakutenConnectionResult {
+  ok: boolean;
+  count?: number;
+  errorCode?: string;
+  errorMessage?: string;
+  referer: string;
+}
+
+/** 接続診断（1件だけ検索） */
+export async function testRakutenConnection(): Promise<RakutenConnectionResult> {
+  const referer = `${SITE_URL}/`;
+
+  if (!RAKUTEN_APP_ID || !RAKUTEN_ACCESS_KEY) {
+    return {
+      ok: false,
+      errorCode: "ENV_MISSING",
+      errorMessage: "RAKUTEN_APP_ID または RAKUTEN_ACCESS_KEY が未設定",
+      referer,
+    };
+  }
+
+  const params = new URLSearchParams({
+    applicationId: RAKUTEN_APP_ID,
+    accessKey: RAKUTEN_ACCESS_KEY,
+    keyword: RAKUTEN_SEARCH_KEYWORD,
+    hits: "1",
+    page: "1",
+    format: "json",
+    formatVersion: "2",
+  });
+
+  const url = `${RAKUTEN_SEARCH_ENDPOINT}?${params}`;
+
+  try {
+    const res = await fetch(url, {
+      cache: "no-store",
+      headers: buildRakutenHeaders(referer),
+    });
+    const json = (await res.json()) as RakutenSearchResponse;
+
+    if (json.errors?.errorMessage) {
+      return {
+        ok: false,
+        errorCode: String(json.errors.errorMessage),
+        errorMessage: String(json.errors.errorCode ?? res.status),
+        referer,
+      };
+    }
+    if (json.error) {
+      return {
+        ok: false,
+        errorCode: json.error,
+        errorMessage: json.error_description,
+        referer,
+      };
+    }
+    if (!res.ok) {
+      return {
+        ok: false,
+        errorCode: String(res.status),
+        errorMessage: res.statusText,
+        referer,
+      };
+    }
+
+    return { ok: true, count: json.count, referer };
+  } catch (error) {
+    return {
+      ok: false,
+      errorCode: "FETCH_FAILED",
+      errorMessage: error instanceof Error ? error.message : "unknown",
+      referer,
+    };
+  }
+}
+
+function buildRakutenHeaders(referer: string): HeadersInit {
+  const origin = referer.replace(/\/$/, "");
+  return {
+    Referer: referer,
+    Origin: origin,
+    accessKey: RAKUTEN_ACCESS_KEY,
+  };
 }
 
 /** formatVersion=1/2 両方のレスポンス形式に対応 */
@@ -124,12 +212,10 @@ export async function searchRakutenHenreiItems(options: {
   const url = `${RAKUTEN_SEARCH_ENDPOINT}?${params}`;
 
   try {
+    const referer = `${SITE_URL}/`;
     const res = await fetch(url, {
       next: { revalidate: 0 },
-      headers: {
-        Referer: "https://zeical.jp/",
-        Origin: "https://zeical.jp",
-      },
+      headers: buildRakutenHeaders(referer),
     });
     if (!res.ok) {
       const body = await res.text();
@@ -138,6 +224,15 @@ export async function searchRakutenHenreiItems(options: {
     }
 
     const json = (await res.json()) as RakutenSearchResponse;
+    if (json.errors?.errorMessage) {
+      console.error(
+        "[rakuten-api] API error:",
+        json.errors.errorMessage,
+        "referer=",
+        referer,
+      );
+      return [];
+    }
     if (json.error) {
       console.error("[rakuten-api] API error:", json.error, json.error_description);
       return [];

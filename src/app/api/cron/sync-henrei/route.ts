@@ -24,7 +24,7 @@ export async function GET(request: Request) {
       return NextResponse.json({
         ok: true,
         synced: 0,
-        message: "RAKUTEN_APP_ID未設定または取得結果0件。シードデータが使われます。",
+        message: "RAKUTEN_APP_ID未設定または取得結果0件。Supabase未設定時は楽天APIキャッシュ→シードの順で表示します。",
         durationMs: Date.now() - startTime,
       });
     }
