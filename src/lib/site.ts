@@ -4,7 +4,7 @@
 
 /** 本番URL。環境変数があればそれを使い、なければ仮のURLを使う */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://zeical.example.com";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://zeical.jp";
 
 export const siteConfig = {
   name: "税金まるわかりナビ",

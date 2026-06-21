@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { AdSlot } from "./ad-slot";
+import { isValidAdSlot } from "@/lib/ads";
 
 interface StickyBottomAdProps {
-  /** AdSense管理画面で発行した広告ユニットのスロットID */
-  slot: string;
+  /** AdSense管理画面で発行した広告ユニットのスロットID（空なら非表示） */
+  slot?: string;
 }
 
 /**
@@ -15,7 +16,7 @@ interface StickyBottomAdProps {
  */
 export function StickyBottomAd({ slot }: StickyBottomAdProps) {
   const [closed, setClosed] = useState(false);
-  if (closed) return null;
+  if (closed || !isValidAdSlot(slot)) return null;
 
   return (
     <>

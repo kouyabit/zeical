@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ADSENSE_CLIENT } from "@/lib/ads";
+import { ADSENSE_CLIENT, isValidAdSlot } from "@/lib/ads";
 import { cn } from "@/lib/utils";
 
 // adsbygoogle のグローバル変数を型安全に宣言する（any を使わない）
@@ -12,8 +12,8 @@ declare global {
 }
 
 interface AdSlotProps {
-  /** AdSense管理画面で発行した広告ユニットのスロットID */
-  slot: string;
+  /** AdSense管理画面で発行した広告ユニットのスロットID（空ならプレースホルダー） */
+  slot?: string;
   className?: string;
   /** 広告未設定時に表示するプレースホルダーの説明文 */
   placeholderLabel?: string;
@@ -29,22 +29,25 @@ export function AdSlot({
   className,
   placeholderLabel = "広告スペース",
 }: AdSlotProps) {
+  const hasValidSlot = isValidAdSlot(slot);
+
   // ページ表示後に広告の読み込みを依頼する
   useEffect(() => {
-    if (!ADSENSE_CLIENT) return;
+    if (!ADSENSE_CLIENT || !hasValidSlot) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch {
       // 広告の読み込み失敗はサイトの動作に影響させない
     }
-  }, []);
+  }, [hasValidSlot]);
 
-  // AdSense未設定のときは、配置を確認できるプレースホルダーを表示する
-  if (!ADSENSE_CLIENT) {
+  // スロットID未設定のときは、配置を確認できるプレースホルダーを表示する
+  if (!ADSENSE_CLIENT || !hasValidSlot) {
     return (
       <div className={cn("my-8", className)}>
         <div className="flex min-h-[72px] items-center justify-center rounded-md border border-dashed border-border bg-muted/40 px-4 text-center text-xs text-muted-foreground">
-          {placeholderLabel}（AdSense設定後にここへ広告が表示されます）
+          {placeholderLabel}
+          （AdSense管理画面で広告ユニットを作成し、スロットIDを設定すると表示されます）
         </div>
       </div>
     );
