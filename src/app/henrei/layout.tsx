@@ -1,5 +1,8 @@
-/** 返礼品データは最大1時間ごとに再取得（楽天APIキャッシュ） */
-export const revalidate = 3600;
+/**
+ * 返礼品データはリクエスト時に取得する（ビルド時は楽天APIを呼ばずシードになるため）。
+ * 楽天API本体は unstable_cache で最大24時間キャッシュされる。
+ */
+export const dynamic = "force-dynamic";
 
 export default function HenreiLayout({
   children,

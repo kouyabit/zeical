@@ -13,19 +13,14 @@ import { FurusatoCta } from "@/components/henrei/furusato-cta";
 import { HenreiItemImage } from "@/components/henrei/henrei-item-image";
 import { buildPortalLinks } from "@/lib/henrei/affiliate-urls";
 import { RETURN_RATE_EXPLANATION } from "@/lib/henrei/return-rate";
-import { getHenreiItems, getHenreiItemById } from "@/lib/henrei/store";
+import { getHenreiItemById } from "@/lib/henrei/store";
 import { formatYen } from "@/lib/utils";
 
 interface PageProps {
   params: { id: string };
 }
 
-export async function generateStaticParams() {
-  const items = await getHenreiItems();
-  return items.map((item) => ({ id: item.id }));
-}
-
-/** ビルド後に追加された返礼品IDも表示できるようにする */
+/** ビルド時にシードで固定生成しない（楽天の live データをリクエスト時に表示） */
 export const dynamicParams = true;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

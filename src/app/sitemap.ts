@@ -8,6 +8,9 @@ import {
   HENREI_PRICE_TIERS,
 } from "@/lib/henrei/constants";
 
+/** sitemap の返礼品URLは1日1回更新（ビルド時はシードになるため） */
+export const revalidate = 86400;
+
 /**
  * sitemap.xml を自動生成する（Next.jsの仕組みを利用）。
  * 固定ページと、記事ページのURLをすべて列挙する。

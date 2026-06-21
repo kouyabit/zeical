@@ -6,7 +6,6 @@ import { HenreiItemCard } from "@/components/henrei/henrei-item-card";
 import { HenreiDisclaimer } from "@/components/henrei/henrei-disclaimer";
 import { FurusatoCta } from "@/components/henrei/furusato-cta";
 import {
-  HENREI_PREFECTURES,
   getPrefectureBySlug,
 } from "@/lib/henrei/constants";
 import {
@@ -18,9 +17,7 @@ interface PageProps {
   params: { slug: string };
 }
 
-export function generateStaticParams() {
-  return HENREI_PREFECTURES.map((pref) => ({ slug: pref.slug }));
-}
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const prefecture = getPrefectureBySlug(params.slug);
