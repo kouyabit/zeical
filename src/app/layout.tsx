@@ -8,6 +8,7 @@ import { AdSenseScript } from "@/components/ads/adsense-script";
 import { StickyBottomAd } from "@/components/ads/sticky-bottom-ad";
 import { ADSENSE_SLOTS } from "@/lib/ads";
 import { siteConfig, SITE_URL } from "@/lib/site";
+import { Analytics } from "@vercel/analytics/next";
 
 // 日本語表示に最適化したフォント。CSS変数経由でTailwindから利用する
 const notoSansJp = Noto_Sans_JP({
@@ -68,6 +69,7 @@ export default function RootLayout({
           <SiteFooter />
         </div>
         <StickyBottomAd slot={ADSENSE_SLOTS.sticky} />
+        <Analytics />
       </body>
     </html>
   );
