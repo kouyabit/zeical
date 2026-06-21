@@ -6,6 +6,14 @@ interface ReturnRateBadgeProps {
 
 /** 還元率バッジ（3割ルール超過時は警告色） */
 export function ReturnRateBadge({ rate }: ReturnRateBadgeProps) {
+  if (rate <= 0) {
+    return (
+      <span className="inline-flex shrink-0 items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+        還元率 未算出
+      </span>
+    );
+  }
+
   const isOverLimit = exceedsReturnGiftLimit(rate);
 
   return (

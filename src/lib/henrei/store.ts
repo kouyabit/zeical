@@ -87,10 +87,13 @@ export async function getHenreiItemsByPrefecture(slug: string): Promise<HenreiIt
     .sort((a, b) => b.returnRate - a.returnRate);
 }
 
-/** 還元率ランキング */
+/** 還元率ランキング（算出できた商品のみ） */
 export async function getReturnRateRanking(limit = 20): Promise<HenreiItem[]> {
   const items = await getHenreiItems();
-  return [...items].sort((a, b) => b.returnRate - a.returnRate).slice(0, limit);
+  return [...items]
+    .filter((item) => item.returnRate > 0)
+    .sort((a, b) => b.returnRate - a.returnRate)
+    .slice(0, limit);
 }
 
 /** 人気ランキング */

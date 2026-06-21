@@ -3,6 +3,12 @@ import {
   RAKUTEN_API_MIN_INTERVAL_MS,
   RAKUTEN_SEARCH_KEYWORD,
 } from "./constants";
+import {
+  extractMarketPriceFromText,
+  inferPrefectureSlug,
+  resolveDonationAmount,
+  resolveMunicipalityName,
+} from "./rakuten-parse";
 import { calcReturnRate } from "./return-rate";
 
 const RAKUTEN_APP_ID = process.env.RAKUTEN_APP_ID ?? "";
@@ -18,6 +24,7 @@ interface RakutenApiItem {
   itemName: string;
   itemPrice: number;
   itemUrl: string;
+  itemCaption?: string;
   mediumImageUrls?: { imageUrl: string }[];
   shopName: string;
   reviewAverage?: number;
@@ -147,13 +154,18 @@ export async function searchRakutenHenreiItems(options: {
   }
 }
 
-/** 楽天APIレスポンスをHenreiItemに変換（寄付額は商品名から推定） */
+/** 楽天APIレスポンスをHenreiItemに変換 */
 function mapRakutenItemToHenrei(item: RakutenApiItem): HenreiItem | null {
-  const donationAmount = extractDonationAmount(item.itemName);
+  const donationAmount = resolveDonationAmount(item.itemPrice, item.itemName);
   if (!donationAmount) return null;
 
-  const marketPrice = item.itemPrice;
-  const returnRate = calcReturnRate(marketPrice, donationAmount);
+  // 説明文・キャッチコピーから実勢価格を推定（取れない場合は 0）
+  const priceText = [item.itemCaption, item.catchcopy].filter(Boolean).join("\n");
+  const marketPrice =
+    extractMarketPriceFromText(priceText, donationAmount) ?? 0;
+  const returnRate =
+    marketPrice > 0 ? calcReturnRate(marketPrice, donationAmount) : 0;
+
   const reviewAverage = item.reviewAverage ?? 0;
   const reviewCount = item.reviewCount ?? 0;
 
@@ -166,8 +178,8 @@ function mapRakutenItemToHenrei(item: RakutenApiItem): HenreiItem | null {
     marketPrice,
     returnRate,
     categorySlug: inferCategorySlug(item.itemName),
-    prefectureSlug: inferPrefectureSlug(item.itemName),
-    municipalityName: extractMunicipality(item.itemName) ?? item.shopName,
+    prefectureSlug: inferPrefectureSlug(item.shopName, item.itemName),
+    municipalityName: resolveMunicipalityName(item.shopName, item.itemName),
     rakutenItemUrl: item.itemUrl,
     reviewAverage,
     reviewCount,
@@ -176,50 +188,21 @@ function mapRakutenItemToHenrei(item: RakutenApiItem): HenreiItem | null {
   };
 }
 
-/** 商品名から寄付額を推定（例: "10,000円" "1万円"） */
-function extractDonationAmount(name: string): number | null {
-  const manMatch = name.match(/(\d+)万円/);
-  if (manMatch) return Number(manMatch[1]) * 10000;
-
-  const yenMatch = name.match(/([\d,]+)円/);
-  if (yenMatch) return Number(yenMatch[1].replace(/,/g, ""));
-
-  return null;
-}
-
-/** 商品名から自治体名を抽出 */
-function extractMunicipality(name: string): string | null {
-  const match = name.match(/【([^】]+)】/);
-  return match?.[1] ?? null;
-}
-
-/** 商品名から都道府県slugを推定 */
-function inferPrefectureSlug(name: string): string {
-  const map: Record<string, string> = {
-    北海道: "hokkaido",
-    青森: "aomori",
-    宮城: "miyagi",
-    茨城: "ibaraki",
-    長野: "nagano",
-    熊本: "kumamoto",
-    沖縄: "okinawa",
-  };
-  for (const [key, slug] of Object.entries(map)) {
-    if (name.includes(key)) return slug;
-  }
-  return "hokkaido";
-}
-
 /** 商品名からカテゴリslugを推定 */
 function inferCategorySlug(name: string): string {
   const rules: [string[], string][] = [
-    [["和牛", "牛", "ステーキ"], "wagyu"],
-    [["米", "コシヒカリ"], "rice"],
-    [["蟹", "海老", "うに", "牡蠣", "魚"], "seafood"],
-    [["りんご", "メロン", "マンゴー", "フルーツ"], "fruits"],
+    [["和牛", "牛", "ステーキ", "ヒレ", "宮崎牛", "佐賀牛"], "wagyu"],
+    [["米", "コシヒカリ", "つや姫", "無洗米"], "rice"],
+    [
+      ["蟹", "海老", "うに", "牡蠣", "魚", "うなぎ", "鰻", "ホタテ", "帆立", "いくら", "鮭", "サーモン", "エビ"],
+      "seafood",
+    ],
+    [["りんご", "メロン", "マンゴー", "フルーツ", "ぶどう", "桃", "梨", "ブルーベリー", "シャインマスカット"],
+      "fruits",
+    ],
     [["馬刺", "豚", "鶏"], "meat"],
     [["ケーキ", "スイーツ", "和菓子"], "sweets"],
-    [["酒", "日本酒", "ワイン"], "alcohol"],
+    [["酒", "日本酒", "ワイン", "ビール"], "alcohol"],
   ];
   for (const [keywords, slug] of rules) {
     if (keywords.some((kw) => name.includes(kw))) return slug;

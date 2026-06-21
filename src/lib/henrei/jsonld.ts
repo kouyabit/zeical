@@ -37,6 +37,11 @@ export function buildHenreiProductJsonLd(
 export function buildHenreiFaqJsonLd(
   item: HenreiItem,
 ): Record<string, unknown> {
+  const returnRateAnswer =
+    item.returnRate > 0 && item.marketPrice > 0
+      ? `還元率＝実勢価格（${item.marketPrice.toLocaleString("ja-JP")}円）÷寄付額（${item.donationAmount.toLocaleString("ja-JP")}円）×100＝${item.returnRate}%。寄付額は楽天APIの itemPrice、実勢価格は商品説明文から推定しています。`
+      : `寄付額は${item.donationAmount.toLocaleString("ja-JP")}円（楽天APIの itemPrice）です。実勢価格は商品説明文から特定できなかったため、還元率は算出していません。`;
+
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -46,7 +51,7 @@ export function buildHenreiFaqJsonLd(
         name: "還元率はどのように計算されていますか？",
         acceptedAnswer: {
           "@type": "Answer",
-          text: `還元率＝実勢価格（${item.marketPrice.toLocaleString("ja-JP")}円）÷寄付額（${item.donationAmount.toLocaleString("ja-JP")}円）×100＝${item.returnRate}%。実勢価格は楽天市場の通常販売価格を採用しています。`,
+          text: returnRateAnswer,
         },
       },
       {

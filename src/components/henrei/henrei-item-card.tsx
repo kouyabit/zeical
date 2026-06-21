@@ -47,7 +47,9 @@ export function HenreiItemCard({ item, rank }: HenreiItemCardProps) {
             </div>
             <div className="flex justify-between">
               <dt className="text-muted-foreground">実勢価格</dt>
-              <dd className="font-bold">{formatYen(item.marketPrice)}</dd>
+              <dd className="font-bold">
+                {item.marketPrice > 0 ? formatYen(item.marketPrice) : "未算出"}
+              </dd>
             </div>
             {item.reviewCount !== undefined && item.reviewCount > 0 && (
               <div className="flex justify-between">

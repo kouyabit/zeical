@@ -30,7 +30,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: item.name,
-    description: `${item.name}｜寄付額${formatYen(item.donationAmount)}・還元率${item.returnRate}%`,
+    description:
+      item.returnRate > 0
+        ? `${item.name}｜寄付額${formatYen(item.donationAmount)}・還元率${item.returnRate}%`
+        : `${item.name}｜寄付額${formatYen(item.donationAmount)}`,
     alternates: { canonical: `/henrei/item/${params.id}` },
     openGraph: {
       title: item.name,
@@ -89,11 +92,15 @@ export default async function HenreiItemPage({ params }: PageProps) {
           </div>
           <div>
             <dt className="text-muted-foreground">実勢価格（楽天通常販売価格）</dt>
-            <dd className="text-lg font-bold">{formatYen(item.marketPrice)}</dd>
+            <dd className="text-lg font-bold">
+              {item.marketPrice > 0 ? formatYen(item.marketPrice) : "未算出"}
+            </dd>
           </div>
           <div>
             <dt className="text-muted-foreground">還元率</dt>
-            <dd className="text-lg font-bold">{item.returnRate}%</dd>
+            <dd className="text-lg font-bold">
+              {item.returnRate > 0 ? `${item.returnRate}%` : "未算出"}
+            </dd>
           </div>
           {item.reviewCount !== undefined && item.reviewCount > 0 && (
             <div>
@@ -111,10 +118,17 @@ export default async function HenreiItemPage({ params }: PageProps) {
             {RETURN_RATE_EXPLANATION.map((line) => (
               <li key={line}>{line}</li>
             ))}
-            <li>
-              本商品: {formatYen(item.marketPrice)} ÷{" "}
-              {formatYen(item.donationAmount)} × 100 = {item.returnRate}%
-            </li>
+            {item.returnRate > 0 && item.marketPrice > 0 && (
+              <li>
+                本商品: {formatYen(item.marketPrice)} ÷{" "}
+                {formatYen(item.donationAmount)} × 100 = {item.returnRate}%
+              </li>
+            )}
+            {item.returnRate <= 0 && (
+              <li>
+                本商品は説明文から実勢価格を特定できなかったため、還元率は表示していません。
+              </li>
+            )}
           </ul>
         </section>
 

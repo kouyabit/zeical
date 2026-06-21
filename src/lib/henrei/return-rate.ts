@@ -12,7 +12,8 @@ export function calcReturnRate(marketPrice: number, donationAmount: number): num
 /** 還元率の計算根拠テキスト（画面表示用） */
 export const RETURN_RATE_EXPLANATION = [
   "還元率 ＝ 実勢価格（楽天市場の通常販売価格）÷ 寄付額 × 100",
-  "実勢価格は楽天市場APIから取得した商品価格を採用しています。",
+  "寄付額は楽天APIの itemPrice（最低寄付金額）を採用しています。",
+  "実勢価格は商品説明文から推定できる場合のみ表示しています。",
   `返礼品の提供上限は2017年総務省通知により、原則として寄付額の${RETURN_GIFT_RATE_LIMIT_PERCENT}%以下が目安とされています。`,
   "本サイトの還元率は参考値です。返礼品の内容・価格は変更される場合があります。",
 ] as const;
