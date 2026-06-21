@@ -6,6 +6,12 @@ import {
 import { calcReturnRate } from "./return-rate";
 
 const RAKUTEN_APP_ID = process.env.RAKUTEN_APP_ID ?? "";
+const RAKUTEN_ACCESS_KEY = process.env.RAKUTEN_ACCESS_KEY ?? "";
+const RAKUTEN_AFFILIATE_ID = process.env.RAKUTEN_AFFILIATE_ID ?? "";
+
+/** 2026年版 楽天市場 商品検索APIエンドポイント */
+const RAKUTEN_SEARCH_ENDPOINT =
+  "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260401";
 
 /** 楽天APIの商品1件分のレスポンス型（必要なフィールドのみ） */
 interface RakutenApiItem {
@@ -21,8 +27,22 @@ interface RakutenApiItem {
 }
 
 interface RakutenSearchResponse {
-  Items?: { Item: RakutenApiItem }[];
+  Items?: RakutenApiItem[] | { Item: RakutenApiItem }[];
   pageCount?: number;
+  error?: string;
+  error_description?: string;
+}
+
+/** formatVersion=1/2 両方のレスポンス形式に対応 */
+function normalizeRakutenItems(
+  items: RakutenSearchResponse["Items"],
+): RakutenApiItem[] {
+  if (!items?.length) return [];
+  const first = items[0];
+  if (first && "Item" in first) {
+    return (items as { Item: RakutenApiItem }[]).map((entry) => entry.Item);
+  }
+  return items as RakutenApiItem[];
 }
 
 /** 1秒1リクエスト制限を守るための待機 */
@@ -62,8 +82,10 @@ export async function searchRakutenHenreiItems(options: {
   categorySlug?: string;
   page?: number;
 }): Promise<HenreiItem[]> {
-  if (!RAKUTEN_APP_ID) {
-    console.warn("[rakuten-api] RAKUTEN_APP_ID が未設定のためスキップ");
+  if (!RAKUTEN_APP_ID || !RAKUTEN_ACCESS_KEY) {
+    console.warn(
+      "[rakuten-api] RAKUTEN_APP_ID または RAKUTEN_ACCESS_KEY が未設定のためスキップ",
+    );
     return [];
   }
 
@@ -78,23 +100,43 @@ export async function searchRakutenHenreiItems(options: {
 
   const params = new URLSearchParams({
     applicationId: RAKUTEN_APP_ID,
+    accessKey: RAKUTEN_ACCESS_KEY,
     keyword,
     hits: "30",
     page: String(options.page ?? 1),
     sort: "-reviewCount",
+    format: "json",
+    formatVersion: "2",
+    imageFlag: "1",
   });
 
-  const url = `https://app.rakuten.co.jp/services/api/IchibaItem/Search/20220601?${params}`;
+  if (RAKUTEN_AFFILIATE_ID) {
+    params.set("affiliateId", RAKUTEN_AFFILIATE_ID);
+  }
+
+  const url = `${RAKUTEN_SEARCH_ENDPOINT}?${params}`;
 
   try {
-    const res = await fetch(url, { next: { revalidate: 0 } });
+    const res = await fetch(url, {
+      next: { revalidate: 0 },
+      headers: {
+        Referer: "https://zeical.jp/",
+        Origin: "https://zeical.jp",
+      },
+    });
     if (!res.ok) {
-      console.error("[rakuten-api] HTTP error:", res.status, res.statusText);
+      const body = await res.text();
+      console.error("[rakuten-api] HTTP error:", res.status, body);
       return [];
     }
 
     const json = (await res.json()) as RakutenSearchResponse;
-    const rawItems = json.Items?.map((entry) => entry.Item) ?? [];
+    if (json.error) {
+      console.error("[rakuten-api] API error:", json.error, json.error_description);
+      return [];
+    }
+
+    const rawItems = normalizeRakutenItems(json.Items);
 
     return rawItems
       .map((item) => mapRakutenItemToHenrei(item))
