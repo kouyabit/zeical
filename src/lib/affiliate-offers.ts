@@ -79,7 +79,8 @@ export const affiliateOffers: AffiliateOffer[] = [
       "口座やクレジットカードと連携して、副業の収支を自動で記録・集計できます。",
     ctaLabel: "マネーフォワードを試す",
     category: "tax-software",
-    url: "",
+    // A8.net リンクコード
+    url: "https://px.a8.net/svt/ejp?a8mat=4B61WH+EPAECA+4JGQ+C3J0H",
   },
   {
     id: "yayoi",
@@ -89,7 +90,8 @@ export const affiliateOffers: AffiliateOffer[] = [
       "青色申告に対応した定番ソフト。初年度無料プランがあり、副業を始めた人にも始めやすい。",
     ctaLabel: "やよいを見る",
     category: "tax-software",
-    url: "",
+    // A8.net リンクコード
+    url: "https://px.a8.net/svt/ejp?a8mat=4B61WH+FEW1CQ+35XE+5YJRM",
   },
 
   // ── 副業の入口サービス ──
