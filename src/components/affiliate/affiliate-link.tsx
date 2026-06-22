@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { sendGaEvent } from "@/lib/analytics";
+import { normalizeA8AffiliateUrl } from "@/lib/affiliate-offers";
 import { buttonVariants } from "@/components/ui/button";
 
 interface AffiliateLinkProps {
@@ -27,17 +28,19 @@ export function AffiliateLink({
   asButton = false,
   className,
 }: AffiliateLinkProps) {
+  const safeHref = normalizeA8AffiliateUrl(href);
+
   // クリック時にGA4へ「affiliate_click」イベントを送信する
   const handleClick = () => {
     sendGaEvent("affiliate_click", {
       affiliate_provider: provider,
-      link_url: href,
+      link_url: safeHref,
     });
   };
 
   return (
     <a
-      href={href}
+      href={safeHref}
       onClick={handleClick}
       target="_blank"
       // nofollow と sponsored を必ず付与（規約・ガイドライン遵守）

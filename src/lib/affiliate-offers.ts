@@ -10,6 +10,18 @@
 /** 案件のジャンル */
 export type OfferCategory = "furusato" | "tax-software" | "side-job";
 
+/**
+ * A8.net のリンクURLをHTML用に正規化する。
+ * a8mat の「+」はHTMLではスペース扱いになり、リンク先が壊れるため %2B に変換する。
+ */
+export function normalizeA8AffiliateUrl(url: string): string {
+  if (!url.includes("px.a8.net") || !url.includes("a8mat=")) return url;
+  return url.replace(/a8mat=([^&]+)/, (_match, mat: string) => {
+    const encodedMat = mat.replace(/\+/g, "%2B");
+    return `a8mat=${encodedMat}`;
+  });
+}
+
 export interface AffiliateOffer {
   /** GA計測・data-aff属性に使う識別子（半角英数） */
   id: string;
@@ -79,8 +91,8 @@ export const affiliateOffers: AffiliateOffer[] = [
       "口座やクレジットカードと連携して、副業の収支を自動で記録・集計できます。",
     ctaLabel: "マネーフォワードを試す",
     category: "tax-software",
-    // A8.net リンクコード
-    url: "https://px.a8.net/svt/ejp?a8mat=4B61WH+EPAECA+4JGQ+C3J0H",
+    // A8.net（+ は %2B にエンコードして保存）
+    url: "https://px.a8.net/svt/ejp?a8mat=4B61WH%2BEPAECA%2B4JGQ%2BC3J0H",
   },
   {
     id: "yayoi",
@@ -90,8 +102,8 @@ export const affiliateOffers: AffiliateOffer[] = [
       "青色申告に対応した定番ソフト。初年度無料プランがあり、副業を始めた人にも始めやすい。",
     ctaLabel: "やよいを見る",
     category: "tax-software",
-    // A8.net リンクコード
-    url: "https://px.a8.net/svt/ejp?a8mat=4B61WH+FEW1CQ+35XE+5YJRM",
+    // A8.net（+ は %2B にエンコードして保存）
+    url: "https://px.a8.net/svt/ejp?a8mat=4B61WH%2BFEW1CQ%2B35XE%2B5YJRM",
   },
 
   // ── 副業の入口サービス ──
