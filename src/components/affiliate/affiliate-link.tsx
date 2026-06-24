@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { sendGaEvent } from "@/lib/analytics";
 import { normalizeA8AffiliateUrl } from "@/lib/affiliate-offers";
+import { normalizeAffiliateHref } from "@/lib/affiliate-config";
 import { buttonVariants } from "@/components/ui/button";
 
 interface AffiliateLinkProps {
@@ -28,7 +29,7 @@ export function AffiliateLink({
   asButton = false,
   className,
 }: AffiliateLinkProps) {
-  const safeHref = normalizeA8AffiliateUrl(href);
+  const safeHref = normalizeAffiliateHref(normalizeA8AffiliateUrl(href));
 
   // クリック時にGA4へ「affiliate_click」イベントを送信する
   const handleClick = () => {

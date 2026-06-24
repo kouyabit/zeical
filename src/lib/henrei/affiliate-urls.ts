@@ -1,4 +1,8 @@
 import type { HenreiItem } from "@/types/henrei";
+import {
+  FURUNAVI_VC_REFERRAL,
+  wrapValueCommerceUrl,
+} from "@/lib/affiliate-config";
 
 /** アフィリエイトポータル種別 */
 export type PortalType = "rakuten" | "satofuru" | "furunavi" | "yahoo";
@@ -11,7 +15,6 @@ export interface PortalLink {
 
 const RAKUTEN_AFFILIATE_ID = process.env.RAKUTEN_AFFILIATE_ID ?? "";
 const SATOFURU_TAG = process.env.SATOFURU_AFFILIATE_TAG ?? "";
-const FURUNAVI_TAG = process.env.FURUNAVI_AFFILIATE_TAG ?? "";
 const YAHOO_TAG = process.env.YAHOO_AFFILIATE_TAG ?? "";
 
 /** 楽天アフィリエイトURLを組み立てる */
@@ -32,9 +35,10 @@ export function buildPortalLinks(item: HenreiItem): PortalLink[] {
     ? `https://www.satofull.jp/products/detail.php?product_id=${item.id}&${SATOFURU_TAG}`
     : `https://www.satofull.jp/search/?keyword=${keyword}`;
 
-  const furunaviBase = FURUNAVI_TAG
-    ? `https://furunavi.jp/product_detail.aspx?pid=${item.id}&${FURUNAVI_TAG}`
-    : `https://furunavi.jp/search?q=${keyword}`;
+  const furunaviSearch = `https://furunavi.jp/search?q=${keyword}`;
+  const furunaviBase = FURUNAVI_VC_REFERRAL
+    ? wrapValueCommerceUrl(furunaviSearch)
+    : furunaviSearch;
 
   const yahooBase = YAHOO_TAG
     ? `https://furusato.yahoo.co.jp/d/search?${YAHOO_TAG}&q=${keyword}`
