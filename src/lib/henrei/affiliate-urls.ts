@@ -1,7 +1,7 @@
 import type { HenreiItem } from "@/types/henrei";
 import {
-  FURUNAVI_VC_REFERRAL,
-  wrapValueCommerceUrl,
+  buildFurunaviAffiliateUrl,
+  buildFurunaviSearchUrl,
 } from "@/lib/affiliate-config";
 
 /** アフィリエイトポータル種別 */
@@ -35,10 +35,9 @@ export function buildPortalLinks(item: HenreiItem): PortalLink[] {
     ? `https://www.satofull.jp/products/detail.php?product_id=${item.id}&${SATOFURU_TAG}`
     : `https://www.satofull.jp/search/?keyword=${keyword}`;
 
-  const furunaviSearch = `https://furunavi.jp/search?q=${keyword}`;
-  const furunaviBase = FURUNAVI_VC_REFERRAL
-    ? wrapValueCommerceUrl(furunaviSearch)
-    : furunaviSearch;
+  const furunaviBase = buildFurunaviAffiliateUrl(
+    buildFurunaviSearchUrl(item.name),
+  );
 
   const yahooBase = YAHOO_TAG
     ? `https://furusato.yahoo.co.jp/d/search?${YAHOO_TAG}&q=${keyword}`
