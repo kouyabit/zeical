@@ -4,6 +4,9 @@ import { RecommendedOffers } from "@/components/affiliate/recommended-offers";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildSimulatorJsonLd, buildBreadcrumbJsonLd } from "@/lib/jsonld";
 
+/** アフィリエイトURLを常に最新コードから出す（ビルド時の古い環境変数を避ける） */
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "ふるさと納税 控除上限額シミュレーター【2025年度版】",
   description:
