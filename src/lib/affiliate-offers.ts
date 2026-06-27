@@ -7,10 +7,7 @@
  * （まだ取得していないリンクが誤って公開されるのを防ぐため）。
  */
 
-import {
-  buildFurunaviAffiliateUrl,
-  FURUNAVI_TOP_URL,
-} from "./affiliate-config";
+import { FURUNAVI_TOP_MYLINK } from "./affiliate-config";
 
 /** 案件のジャンル */
 export type OfferCategory = "furusato" | "tax-software" | "side-job";
@@ -54,8 +51,8 @@ export const affiliateOffers: AffiliateOffer[] = [
       "寄付でふるなびコインがもらえる、人気のふるさと納税ポータル。家電などの返礼品も豊富です。",
     ctaLabel: "ふるなびで返礼品を探す",
     category: "furusato",
-    // バリューコマース（vc_url でふるなびトップへ）
-    url: buildFurunaviAffiliateUrl(FURUNAVI_TOP_URL),
+    // バリューコマース MyLink（ふるなびトップ）
+    url: FURUNAVI_TOP_MYLINK,
   },
   {
     id: "satofull",

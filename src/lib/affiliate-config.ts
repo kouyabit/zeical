@@ -1,10 +1,19 @@
-/** ふるなび（バリューコマース）の referral ベースURL */
+/** ふるなび（バリューコマース）MyLink の referral ベース（pid=892646053） */
 export const FURUNAVI_VC_REFERRAL =
   process.env.FURUNAVI_VC_REFERRAL ??
-  "https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=3773912&pid=892644347";
+  "https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=3773912&pid=892646053";
 
-/** ふるなびトップ */
-export const FURUNAVI_TOP_URL = "https://furunavi.jp/";
+/** ふるなびトップ（MyLink 作成時の UTM 付き） */
+export const FURUNAVI_TOP_URL =
+  "https://furunavi.jp/?utm_source=vc&utm_medium=affiliate&utm_campaign=product_detail";
+
+/**
+ * MyLink で取得したふるなびトップ用URL（そのまま使うのが最も確実）
+ * vc_url 先: furunavi.jp/?utm_source=vc&utm_medium=affiliate&utm_campaign=product_detail
+ */
+export const FURUNAVI_TOP_MYLINK =
+  process.env.FURUNAVI_TOP_MYLINK ??
+  "https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=3773912&pid=892646053&vc_url=https%3A%2F%2Ffurunavi.jp%2F%3Futm_source%3Dvc%26utm_medium%3Daffiliate%26utm_campaign%3Dproduct_detail";
 
 /**
  * バリューコマース経由で任意URLへ飛ばす。
