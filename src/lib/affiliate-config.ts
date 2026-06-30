@@ -1,22 +1,19 @@
-/** バリューコマース sid / pid（MyLink で確認済み。旧 pid は使わない） */
-const FURUNAVI_VC_SID = "3773912";
-const FURUNAVI_VC_PID = "892646053";
+/** バリューコマース sid / pid（VC公式バナーコードで確認済み） */
+export const FURUNAVI_VC_SID = "3773912";
+export const FURUNAVI_VC_PID = "892647917";
 
 /**
- * ふるなび（バリューコマース）referral ベース。
- * Vercel に旧 pid が入っているとリンク先に到達できないため、環境変数では上書きしない。
+ * ふるなび（バリューコマース）referral URL。
+ * 控除額シミュレーターのバナー href はこのURLをそのまま使う（vc_url なし）。
  */
 export const FURUNAVI_VC_REFERRAL = `https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=${FURUNAVI_VC_SID}&pid=${FURUNAVI_VC_PID}`;
 
-/** ふるなびトップ（MyLink 作成時の UTM 付き） */
+/** VC公式バナー（gifbanner）の img src */
+export const FURUNAVI_VC_BANNER_SRC = `https://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=${FURUNAVI_VC_SID}&pid=${FURUNAVI_VC_PID}`;
+
+/** ふるなびトップ（返礼品ナビ等で vc_url 指定するときの飛び先） */
 export const FURUNAVI_TOP_URL =
   "https://furunavi.jp/?utm_source=vc&utm_medium=affiliate&utm_campaign=product_detail";
-
-/**
- * MyLink で取得したふるなびトップ用URL（そのまま使うのが最も確実）
- * vc_url 先: furunavi.jp/?utm_source=vc&utm_medium=affiliate&utm_campaign=product_detail
- */
-export const FURUNAVI_TOP_MYLINK = `${FURUNAVI_VC_REFERRAL}&vc_url=${encodeURIComponent(FURUNAVI_TOP_URL)}`;
 
 /**
  * バリューコマース経由で任意URLへ飛ばす。

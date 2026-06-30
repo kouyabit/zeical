@@ -1,13 +1,24 @@
 /**
  * アフィリエイト案件を一元管理する設定ファイル。
  *
- * 【使い方】ASP（A8.net・もしも・バリューコマース等）に登録して取得した
- * 実際のアフィリエイトURLを、各案件の `url` に貼り付けてください。
- * url が空（""）の案件は、サイト上では「準備中」と表示され、リンクは無効になります
- * （まだ取得していないリンクが誤って公開されるのを防ぐため）。
+ * 【控除額シミュレーター（/furusato）のバナー】
+ * ASPから「画像付きリンク」のHTMLを取得し、次のように貼り付ける:
+ *   - `<a href="...">` の href → `url`
+ *   - `<img src="...">` の src → `bannerSrc`
+ *   - width / height → `bannerWidth` / `bannerHeight`
+ * または `parseAffiliateBannerHtml(html)` で一括抽出できる。
+ *
+ * url と bannerSrc の両方が揃った案件だけバナーが表示される（未設定は「バナー準備中」）。
+ *
+ * 【副業ページ等のボタンリンク】
+ * `url` のみ設定すれば RecommendedOffers でボタン表示される。
  */
 
-import { FURUNAVI_TOP_MYLINK } from "./affiliate-config";
+import {
+  FURUNAVI_VC_BANNER_SRC,
+  FURUNAVI_VC_REFERRAL,
+  normalizeAffiliateHref,
+} from "./affiliate-config";
 
 /** 案件のジャンル */
 export type OfferCategory = "furusato" | "tax-software" | "side-job";
@@ -39,6 +50,33 @@ export interface AffiliateOffer {
   category: OfferCategory;
   /** ASPで取得した実際のアフィリエイトURL（未取得なら空文字のまま） */
   url: string;
+  /** ASPバナーコードの img src（控除額シミュレーター用） */
+  bannerSrc?: string;
+  bannerWidth?: number;
+  bannerHeight?: number;
+}
+
+/** ASPのバナーHTMLから href / img src を取り出す（貼り付け作業用） */
+export function parseAffiliateBannerHtml(html: string): Pick<
+  AffiliateOffer,
+  "url" | "bannerSrc" | "bannerWidth" | "bannerHeight"
+> {
+  const hrefMatch = html.match(/href=["']([^"']+)["']/i);
+  const srcMatch = html.match(/src=["']([^"']+)["']/i);
+  const widthMatch = html.match(/width=["']?(\d+)/i);
+  const heightMatch = html.match(/height=["']?(\d+)/i);
+
+  return {
+    url: hrefMatch ? normalizeAffiliateHref(hrefMatch[1]) : "",
+    bannerSrc: srcMatch ? normalizeAffiliateHref(srcMatch[1]) : "",
+    bannerWidth: widthMatch ? Number(widthMatch[1]) : undefined,
+    bannerHeight: heightMatch ? Number(heightMatch[1]) : undefined,
+  };
+}
+
+/** バナー表示に必要な情報が揃っているか */
+export function isBannerOfferReady(offer: AffiliateOffer): boolean {
+  return Boolean(offer.url && offer.bannerSrc);
 }
 
 export const affiliateOffers: AffiliateOffer[] = [
@@ -51,8 +89,9 @@ export const affiliateOffers: AffiliateOffer[] = [
       "寄付でふるなびコインがもらえる、人気のふるさと納税ポータル。家電などの返礼品も豊富です。",
     ctaLabel: "ふるなびで返礼品を探す",
     category: "furusato",
-    // バリューコマース MyLink（ふるなびトップ）
-    url: FURUNAVI_TOP_MYLINK,
+    // バリューコマース公式バナーコード（pid=892647917）の noscript 版
+    url: FURUNAVI_VC_REFERRAL,
+    bannerSrc: FURUNAVI_VC_BANNER_SRC,
   },
   {
     id: "satofull",
@@ -60,9 +99,10 @@ export const affiliateOffers: AffiliateOffer[] = [
     catch: "使いやすさで人気",
     description:
       "申し込みから配送状況の確認までわかりやすい、初心者にもおすすめのふるさと納税サイト。",
-    ctaLabel: "さとふるで探す",
+    ctaLabel: "さとふるで返礼品を探す",
     category: "furusato",
     url: "",
+    bannerSrc: "",
   },
   {
     id: "rakuten-furusato",
@@ -70,9 +110,10 @@ export const affiliateOffers: AffiliateOffer[] = [
     catch: "楽天ポイントが貯まる・使える",
     description:
       "普段の楽天での買い物と同じ感覚で寄付ができ、楽天ポイントも貯まるのが魅力です。",
-    ctaLabel: "楽天ふるさと納税を見る",
+    ctaLabel: "楽天ふるさと納税で返礼品を探す",
     category: "furusato",
     url: "",
+    bannerSrc: "",
   },
 
   // ── 会計ソフト・確定申告 ──
