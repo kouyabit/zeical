@@ -2,6 +2,9 @@
 export const FURUNAVI_VC_SID = "3773912";
 export const FURUNAVI_VC_PID = "892647917";
 
+/** さとふる（バリューコマース）pid */
+export const SATOFURU_VC_PID = "892647927";
+
 /**
  * ふるなび（バリューコマース）referral URL。
  * 控除額シミュレーターのバナー href はこのURLをそのまま使う（vc_url なし）。
@@ -10,6 +13,12 @@ export const FURUNAVI_VC_REFERRAL = `https://ck.jp.ap.valuecommerce.com/servlet/
 
 /** VC公式バナー（gifbanner）の img src */
 export const FURUNAVI_VC_BANNER_SRC = `https://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=${FURUNAVI_VC_SID}&pid=${FURUNAVI_VC_PID}`;
+
+/** さとふる（バリューコマース）referral URL */
+export const SATOFURU_VC_REFERRAL = `https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=${FURUNAVI_VC_SID}&pid=${SATOFURU_VC_PID}`;
+
+/** さとふる VC公式バナー（gifbanner）の img src */
+export const SATOFURU_VC_BANNER_SRC = `https://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=${FURUNAVI_VC_SID}&pid=${SATOFURU_VC_PID}`;
 
 /** ふるなびトップ（返礼品ナビ等で vc_url 指定するときの飛び先） */
 export const FURUNAVI_TOP_URL =

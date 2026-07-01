@@ -17,6 +17,8 @@
 import {
   FURUNAVI_VC_BANNER_SRC,
   FURUNAVI_VC_REFERRAL,
+  SATOFURU_VC_BANNER_SRC,
+  SATOFURU_VC_REFERRAL,
   normalizeAffiliateHref,
 } from "./affiliate-config";
 
@@ -101,8 +103,9 @@ export const affiliateOffers: AffiliateOffer[] = [
       "申し込みから配送状況の確認までわかりやすい、初心者にもおすすめのふるさと納税サイト。",
     ctaLabel: "さとふるで返礼品を探す",
     category: "furusato",
-    url: "",
-    bannerSrc: "",
+    // バリューコマース公式バナーコード（pid=892647927）の noscript 版
+    url: SATOFURU_VC_REFERRAL,
+    bannerSrc: SATOFURU_VC_BANNER_SRC,
   },
   {
     id: "rakuten-furusato",
