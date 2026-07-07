@@ -1,26 +1,18 @@
 /**
  * アフィリエイト案件を一元管理する設定ファイル。
  *
- * 【控除額シミュレーター（/furusato）のバナー】
- * ASPから「画像付きリンク」のHTMLを取得し、次のように貼り付ける:
- *   - `<a href="...">` の href → `url`
- *   - `<img src="...">` の src → `bannerSrc`
- *   - width / height → `bannerWidth` / `bannerHeight`
- * または `parseAffiliateBannerHtml(html)` で一括抽出できる。
+ * 【控除額シミュレーター（/furusato）】
+ * 楽天のみ表示（FurusatoAffiliateSection）。ふるなび・さとふるはVC提携後に追加予定。
  *
- * url と bannerSrc の両方が揃った案件だけバナーが表示される（未設定は「バナー準備中」）。
+ * 【副業ページ等】
+ * `url` を設定すれば RecommendedOffers でボタン表示される。
  *
- * 【副業ページ等のボタンリンク】
- * `url` のみ設定すれば RecommendedOffers でボタン表示される。
+ * 【将来：ふるさとポータルのバナー】
+ * VCからHTML取得 → parseAffiliateBannerHtml() で url / bannerSrc を抽出。
+ * affiliate-config.ts に VC の pid 定数あり。
  */
 
-import {
-  FURUNAVI_VC_BANNER_SRC,
-  FURUNAVI_VC_REFERRAL,
-  SATOFURU_VC_BANNER_SRC,
-  SATOFURU_VC_REFERRAL,
-  normalizeAffiliateHref,
-} from "./affiliate-config";
+import { normalizeAffiliateHref } from "./affiliate-config";
 
 /** 案件のジャンル */
 export type OfferCategory = "furusato" | "tax-software" | "side-job";
@@ -52,7 +44,7 @@ export interface AffiliateOffer {
   category: OfferCategory;
   /** ASPで取得した実際のアフィリエイトURL（未取得なら空文字のまま） */
   url: string;
-  /** ASPバナーコードの img src（控除額シミュレーター用） */
+  /** ASPバナーコードの img src（バナー表示用・任意） */
   bannerSrc?: string;
   bannerWidth?: number;
   bannerHeight?: number;
@@ -82,43 +74,6 @@ export function isBannerOfferReady(offer: AffiliateOffer): boolean {
 }
 
 export const affiliateOffers: AffiliateOffer[] = [
-  // ── ふるさと納税ポータル ──
-  {
-    id: "furunavi",
-    name: "ふるなび",
-    catch: "高還元のふるさと納税サイト",
-    description:
-      "寄付でふるなびコインがもらえる、人気のふるさと納税ポータル。家電などの返礼品も豊富です。",
-    ctaLabel: "ふるなびで返礼品を探す",
-    category: "furusato",
-    // バリューコマース公式バナーコード（pid=892647917）の noscript 版
-    url: FURUNAVI_VC_REFERRAL,
-    bannerSrc: FURUNAVI_VC_BANNER_SRC,
-  },
-  {
-    id: "satofull",
-    name: "さとふる",
-    catch: "使いやすさで人気",
-    description:
-      "申し込みから配送状況の確認までわかりやすい、初心者にもおすすめのふるさと納税サイト。",
-    ctaLabel: "さとふるで返礼品を探す",
-    category: "furusato",
-    // バリューコマース公式バナーコード（pid=892647927）の noscript 版
-    url: SATOFURU_VC_REFERRAL,
-    bannerSrc: SATOFURU_VC_BANNER_SRC,
-  },
-  {
-    id: "rakuten-furusato",
-    name: "楽天ふるさと納税",
-    catch: "楽天ポイントが貯まる・使える",
-    description:
-      "普段の楽天での買い物と同じ感覚で寄付ができ、楽天ポイントも貯まるのが魅力です。",
-    ctaLabel: "楽天ふるさと納税で返礼品を探す",
-    category: "furusato",
-    url: "",
-    bannerSrc: "",
-  },
-
   // ── 会計ソフト・確定申告 ──
   {
     id: "freee",

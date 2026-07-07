@@ -2,6 +2,7 @@ import type { HenreiItem } from "@/types/henrei";
 import {
   buildFurunaviAffiliateUrl,
   buildFurunaviSearchUrl,
+  buildRakutenAffiliateUrl,
 } from "@/lib/affiliate-config";
 
 /** アフィリエイトポータル種別 */
@@ -13,16 +14,8 @@ export interface PortalLink {
   href: string;
 }
 
-const RAKUTEN_AFFILIATE_ID = process.env.RAKUTEN_AFFILIATE_ID ?? "";
 const SATOFURU_TAG = process.env.SATOFURU_AFFILIATE_TAG ?? "";
 const YAHOO_TAG = process.env.YAHOO_AFFILIATE_TAG ?? "";
-
-/** 楽天アフィリエイトURLを組み立てる */
-function buildRakutenAffiliateUrl(itemUrl: string): string {
-  if (!RAKUTEN_AFFILIATE_ID) return itemUrl;
-  const encoded = encodeURIComponent(itemUrl);
-  return `https://hb.afl.rakuten.co.jp/hgc/${RAKUTEN_AFFILIATE_ID}/?pc=${encoded}`;
-}
 
 /** 各ポータルへの検索・商品リンクを生成する */
 export function buildPortalLinks(item: HenreiItem): PortalLink[] {

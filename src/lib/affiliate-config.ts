@@ -5,20 +5,64 @@ export const FURUNAVI_VC_PID = "892647917";
 /** さとふる（バリューコマース）pid */
 export const SATOFURU_VC_PID = "892647927";
 
-/**
- * ふるなび（バリューコマース）referral URL。
- * 控除額シミュレーターのバナー href はこのURLをそのまま使う（vc_url なし）。
- */
-export const FURUNAVI_VC_REFERRAL = `https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=${FURUNAVI_VC_SID}&pid=${FURUNAVI_VC_PID}`;
+/** 各ポータルのトップURL（vc_url の飛び先） */
+export const FURUNAVI_SITE_URL = "https://furunavi.jp/";
+export const SATOFURU_SITE_URL = "https://www.satofull.jp/";
+
+/** referral のベース（vc_url なし） */
+function buildVcReferralBase(sid: string, pid: string): string {
+  return `https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=${sid}&pid=${pid}`;
+}
+
+/** referral + vc_url（クリックでポータルサイトへ飛ばす） */
+function buildVcAffiliateUrl(
+  sid: string,
+  pid: string,
+  destinationUrl: string,
+): string {
+  const base = buildVcReferralBase(sid, pid);
+  return `${base}&vc_url=${encodeURIComponent(destinationUrl)}`;
+}
 
 /** VC公式バナー（gifbanner）の img src */
-export const FURUNAVI_VC_BANNER_SRC = `https://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=${FURUNAVI_VC_SID}&pid=${FURUNAVI_VC_PID}`;
+function buildVcBannerSrc(sid: string, pid: string): string {
+  return `https://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=${sid}&pid=${pid}`;
+}
 
-/** さとふる（バリューコマース）referral URL */
-export const SATOFURU_VC_REFERRAL = `https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=${FURUNAVI_VC_SID}&pid=${SATOFURU_VC_PID}`;
+/** 返礼品ナビ等で vc_url を追加するときのベース */
+export const FURUNAVI_VC_REFERRAL_BASE = buildVcReferralBase(
+  FURUNAVI_VC_SID,
+  FURUNAVI_VC_PID,
+);
+
+/**
+ * ふるなび（バリューコマース）アフィリエイトURL。
+ * referral だけだと VC サイトに留まることがあるため vc_url を付ける。
+ */
+export const FURUNAVI_VC_REFERRAL = buildVcAffiliateUrl(
+  FURUNAVI_VC_SID,
+  FURUNAVI_VC_PID,
+  FURUNAVI_SITE_URL,
+);
+
+/** VC公式バナー（gifbanner）の img src */
+export const FURUNAVI_VC_BANNER_SRC = buildVcBannerSrc(
+  FURUNAVI_VC_SID,
+  FURUNAVI_VC_PID,
+);
+
+/** さとふる（バリューコマース）アフィリエイトURL */
+export const SATOFURU_VC_REFERRAL = buildVcAffiliateUrl(
+  FURUNAVI_VC_SID,
+  SATOFURU_VC_PID,
+  SATOFURU_SITE_URL,
+);
 
 /** さとふる VC公式バナー（gifbanner）の img src */
-export const SATOFURU_VC_BANNER_SRC = `https://ad.jp.ap.valuecommerce.com/servlet/gifbanner?sid=${FURUNAVI_VC_SID}&pid=${SATOFURU_VC_PID}`;
+export const SATOFURU_VC_BANNER_SRC = buildVcBannerSrc(
+  FURUNAVI_VC_SID,
+  SATOFURU_VC_PID,
+);
 
 /** ふるなびトップ（返礼品ナビ等で vc_url 指定するときの飛び先） */
 export const FURUNAVI_TOP_URL =
@@ -30,7 +74,7 @@ export const FURUNAVI_TOP_URL =
  */
 export function wrapValueCommerceUrl(
   targetUrl: string,
-  referralBase: string = FURUNAVI_VC_REFERRAL,
+  referralBase: string = FURUNAVI_VC_REFERRAL_BASE,
 ): string {
   if (!referralBase) return targetUrl;
   const joiner = referralBase.includes("?") ? "&" : "?";
@@ -54,4 +98,14 @@ export function buildFurunaviSearchUrl(keyword: string): string {
 export function normalizeAffiliateHref(url: string): string {
   if (url.startsWith("//")) return `https:${url}`;
   return url;
+}
+
+/** 楽天ふるさと納税トップ */
+export const RAKUTEN_FURUSATO_URL = "https://furusato.rakuten.co.jp/";
+
+/** 楽天アフィリエイトURLを組み立てる（RAKUTEN_AFFILIATE_ID 未設定時は飛び先のみ） */
+export function buildRakutenAffiliateUrl(destinationUrl: string): string {
+  const affiliateId = process.env.RAKUTEN_AFFILIATE_ID?.trim();
+  if (!affiliateId) return destinationUrl;
+  return `https://hb.afl.rakuten.co.jp/hgc/${affiliateId}/?pc=${encodeURIComponent(destinationUrl)}`;
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { FurusatoSimulator } from "@/components/simulator/furusato-simulator";
-import { AffiliateBannerSection } from "@/components/affiliate/affiliate-banner-section";
+import { FurusatoAffiliateSection } from "@/components/affiliate/furusato-affiliate-section";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildSimulatorJsonLd, buildBreadcrumbJsonLd } from "@/lib/jsonld";
 
@@ -48,10 +48,7 @@ export default function FurusatoPage() {
 
       <FurusatoSimulator />
 
-      <AffiliateBannerSection
-        category="furusato"
-        title="ふるさと納税のおすすめサイト"
-      />
+      <FurusatoAffiliateSection />
     </div>
   );
 }

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { AffiliateLink } from "./affiliate-link";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AffiliateOffer } from "@/lib/affiliate-offers";
@@ -13,6 +16,8 @@ interface AffiliateBannerCardProps {
  */
 export function AffiliateBannerCard({ offer }: AffiliateBannerCardProps) {
   const ready = isBannerOfferReady(offer);
+  const [bannerLoaded, setBannerLoaded] = useState(false);
+  const [bannerFailed, setBannerFailed] = useState(false);
 
   return (
     <Card className="flex h-full flex-col">
@@ -23,16 +28,31 @@ export function AffiliateBannerCard({ offer }: AffiliateBannerCardProps) {
             provider={offer.id}
             className="flex w-full flex-col items-center gap-2 text-center"
           >
-            {/* ASP提供のバナー画像（計測用URLのため img タグをそのまま使う） */}
-            <img
-              src={offer.bannerSrc}
-              alt={`${offer.name}（PR・広告）`}
-              width={offer.bannerWidth}
-              height={offer.bannerHeight}
-              loading="lazy"
-              decoding="async"
-              className="h-auto max-w-full"
-            />
+            {/* VC側の審査中は gifbanner が 500 になることがある */}
+            {!bannerFailed && (
+              <img
+                src={offer.bannerSrc}
+                alt={`${offer.name}（PR・広告）`}
+                width={offer.bannerWidth}
+                height={offer.bannerHeight}
+                loading="lazy"
+                decoding="async"
+                referrerPolicy="no-referrer-when-downgrade"
+                onLoad={() => setBannerLoaded(true)}
+                onError={() => setBannerFailed(true)}
+                className={
+                  bannerLoaded
+                    ? "h-auto max-w-full"
+                    : "h-0 w-0 overflow-hidden"
+                }
+              />
+            )}
+            {(!bannerLoaded || bannerFailed) && (
+              <div className="flex min-h-[60px] w-full max-w-[280px] flex-col items-center justify-center rounded-md border border-primary/20 bg-primary/5 px-4 py-3">
+                <p className="text-sm font-bold text-primary">{offer.name}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{offer.catch}</p>
+              </div>
+            )}
             <span className="text-sm font-bold text-primary underline underline-offset-4">
               {offer.ctaLabel}
             </span>
