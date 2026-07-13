@@ -2,8 +2,8 @@ import Link from "next/link";
 import type { AffiliateOffer } from "@/lib/affiliate-offers";
 import {
   buildRakutenAffiliateUrl,
-  FURUNAVI_VC_BANNER_HREF,
   FURUNAVI_VC_BANNER_SRC,
+  FURUNAVI_VC_REFERRAL,
   RAKUTEN_FURUSATO_URL,
 } from "@/lib/affiliate-config";
 import { AffiliateBannerCard } from "./affiliate-banner-card";
@@ -19,7 +19,8 @@ const furunaviOffer: AffiliateOffer = {
     "寄付でふるなびコインがもらえる、人気のふるさと納税ポータル。家電などの返礼品も豊富です。",
   ctaLabel: "ふるなびで返礼品を探す",
   category: "furusato",
-  url: FURUNAVI_VC_BANNER_HREF,
+  // href は vc_url 付き（referral のみだと VC サイトに留まることがある）
+  url: FURUNAVI_VC_REFERRAL,
   bannerSrc: FURUNAVI_VC_BANNER_SRC,
 };
 

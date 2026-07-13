@@ -35,21 +35,18 @@ export const FURUNAVI_VC_REFERRAL_BASE = buildVcReferralBase(
   FURUNAVI_VC_PID,
 );
 
-/** VC公式バナーの href（提携済みの noscript コードどおり vc_url なし） */
-export const FURUNAVI_VC_BANNER_HREF = buildVcReferralBase(
-  FURUNAVI_VC_SID,
-  FURUNAVI_VC_PID,
-);
-
 /**
  * ふるなび（バリューコマース）アフィリエイトURL。
- * 返礼品ナビ等では vc_url 付きで飛び先を明示する。
+ * vc_url で furunavi.jp へ飛ばす（referral のみだと VC サイトに留まることがある）。
  */
 export const FURUNAVI_VC_REFERRAL = buildVcAffiliateUrl(
   FURUNAVI_VC_SID,
   FURUNAVI_VC_PID,
   FURUNAVI_SITE_URL,
 );
+
+/** VC公式バナーの href（vc_url 付き。Next.js では jsbanner 未使用のため明示が必要） */
+export const FURUNAVI_VC_BANNER_HREF = FURUNAVI_VC_REFERRAL;
 
 /** VC公式バナー（gifbanner）の img src */
 export const FURUNAVI_VC_BANNER_SRC = buildVcBannerSrc(

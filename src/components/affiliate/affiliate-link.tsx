@@ -44,8 +44,8 @@ export function AffiliateLink({
       href={safeHref}
       onClick={handleClick}
       target="_blank"
-      // nofollow と sponsored を必ず付与（規約・ガイドライン遵守）
-      rel="nofollow sponsored noopener noreferrer"
+      // noreferrer は付けない（VC等が参照元サイト zeical.jp を確認するため）
+      rel="nofollow sponsored noopener"
       data-aff={provider}
       className={cn(
         asButton

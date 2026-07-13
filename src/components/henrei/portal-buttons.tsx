@@ -22,7 +22,7 @@ export function PortalButtons({ links }: PortalButtonsProps) {
             key={link.portal}
             href={link.href}
             target="_blank"
-            rel="nofollow sponsored noopener noreferrer"
+            rel="nofollow sponsored noopener"
             data-portal={link.portal}
             onClick={() =>
               sendGaEvent("affiliate_click", {
