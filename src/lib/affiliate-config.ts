@@ -1,6 +1,6 @@
 /** バリューコマース sid / pid（VC公式バナーコードで確認済み） */
 export const FURUNAVI_VC_SID = "3773912";
-export const FURUNAVI_VC_PID = "892647917";
+export const FURUNAVI_VC_PID = "892658067";
 
 /** さとふる（バリューコマース）pid */
 export const SATOFURU_VC_PID = "892647927";
@@ -35,9 +35,15 @@ export const FURUNAVI_VC_REFERRAL_BASE = buildVcReferralBase(
   FURUNAVI_VC_PID,
 );
 
+/** VC公式バナーの href（提携済みの noscript コードどおり vc_url なし） */
+export const FURUNAVI_VC_BANNER_HREF = buildVcReferralBase(
+  FURUNAVI_VC_SID,
+  FURUNAVI_VC_PID,
+);
+
 /**
  * ふるなび（バリューコマース）アフィリエイトURL。
- * referral だけだと VC サイトに留まることがあるため vc_url を付ける。
+ * 返礼品ナビ等では vc_url 付きで飛び先を明示する。
  */
 export const FURUNAVI_VC_REFERRAL = buildVcAffiliateUrl(
   FURUNAVI_VC_SID,
