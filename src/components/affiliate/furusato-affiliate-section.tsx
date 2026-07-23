@@ -1,32 +1,15 @@
 import Link from "next/link";
-import type { AffiliateOffer } from "@/lib/affiliate-offers";
 import {
   buildRakutenAffiliateUrl,
-  FURUNAVI_VC_BANNER_SRC,
-  FURUNAVI_VC_REFERRAL,
   RAKUTEN_FURUSATO_URL,
 } from "@/lib/affiliate-config";
-import { AffiliateBannerCard } from "./affiliate-banner-card";
+import { FurunaviAffiliateCard } from "./furunavi-affiliate-card";
 import { AffiliateLink } from "./affiliate-link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-/** ふるなび（VC公式バナー・pid=892658067） */
-const furunaviOffer: AffiliateOffer = {
-  id: "furunavi",
-  name: "ふるなび",
-  catch: "高還元のふるさと納税サイト",
-  description:
-    "寄付でふるなびコインがもらえる、人気のふるさと納税ポータル。家電などの返礼品も豊富です。",
-  ctaLabel: "ふるなびで返礼品を探す",
-  category: "furusato",
-  // href は vc_url 付き（referral のみだと VC サイトに留まることがある）
-  url: FURUNAVI_VC_REFERRAL,
-  bannerSrc: FURUNAVI_VC_BANNER_SRC,
-};
-
 /**
  * 控除額シミュレーター下のおすすめ枠。
- * 提携済みのふるなび（VCバナー）と楽天ふるさと納税を表示する。
+ * ふるなびは /out/furunavi 経由、楽天は楽天アフィリエイト URL。
  */
 export function FurusatoAffiliateSection() {
   const rakutenUrl = buildRakutenAffiliateUrl(RAKUTEN_FURUSATO_URL);
@@ -41,7 +24,7 @@ export function FurusatoAffiliateSection() {
       </p>
 
       <div className="mx-auto mt-5 grid max-w-3xl gap-5 md:grid-cols-2">
-        <AffiliateBannerCard offer={furunaviOffer} />
+        <FurunaviAffiliateCard />
 
         <Card className="flex h-full flex-col">
           <CardHeader>

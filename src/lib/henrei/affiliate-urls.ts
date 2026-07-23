@@ -1,9 +1,5 @@
 import type { HenreiItem } from "@/types/henrei";
-import {
-  buildFurunaviAffiliateUrl,
-  buildFurunaviSearchUrl,
-  buildRakutenAffiliateUrl,
-} from "@/lib/affiliate-config";
+import { buildRakutenAffiliateUrl } from "@/lib/affiliate-config";
 
 /** アフィリエイトポータル種別 */
 export type PortalType = "rakuten" | "satofuru" | "furunavi" | "yahoo";
@@ -28,9 +24,7 @@ export function buildPortalLinks(item: HenreiItem): PortalLink[] {
     ? `https://www.satofull.jp/products/detail.php?product_id=${item.id}&${SATOFURU_TAG}`
     : `https://www.satofull.jp/search/?keyword=${keyword}`;
 
-  const furunaviBase = buildFurunaviAffiliateUrl(
-    buildFurunaviSearchUrl(item.name),
-  );
+  const furunaviBase = `/out/furunavi/search?keyword=${encodeURIComponent(item.name)}`;
 
   const yahooBase = YAHOO_TAG
     ? `https://furusato.yahoo.co.jp/d/search?${YAHOO_TAG}&q=${keyword}`

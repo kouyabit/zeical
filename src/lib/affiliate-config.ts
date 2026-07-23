@@ -9,6 +9,10 @@ export const SATOFURU_VC_PID = "892647927";
 export const FURUNAVI_SITE_URL = "https://furunavi.jp/";
 export const SATOFURU_SITE_URL = "https://www.satofull.jp/";
 
+/** ふるなびトップ（VC MyLink 想定の UTM 付き） */
+export const FURUNAVI_TOP_URL =
+  "https://furunavi.jp/?utm_source=vc&utm_medium=affiliate&utm_campaign=product_detail";
+
 /** referral のベース（vc_url なし） */
 function buildVcReferralBase(sid: string, pid: string): string {
   return `https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=${sid}&pid=${pid}`;
@@ -42,7 +46,7 @@ export const FURUNAVI_VC_REFERRAL_BASE = buildVcReferralBase(
 export const FURUNAVI_VC_REFERRAL = buildVcAffiliateUrl(
   FURUNAVI_VC_SID,
   FURUNAVI_VC_PID,
-  FURUNAVI_SITE_URL,
+  FURUNAVI_TOP_URL,
 );
 
 /** VC公式バナーの href（vc_url 付き。Next.js では jsbanner 未使用のため明示が必要） */
@@ -66,10 +70,6 @@ export const SATOFURU_VC_BANNER_SRC = buildVcBannerSrc(
   FURUNAVI_VC_SID,
   SATOFURU_VC_PID,
 );
-
-/** ふるなびトップ（返礼品ナビ等で vc_url 指定するときの飛び先） */
-export const FURUNAVI_TOP_URL =
-  "https://furunavi.jp/?utm_source=vc&utm_medium=affiliate&utm_campaign=product_detail";
 
 /**
  * バリューコマース経由で任意URLへ飛ばす。
