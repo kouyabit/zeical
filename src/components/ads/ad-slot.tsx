@@ -12,17 +12,17 @@ declare global {
 }
 
 interface AdSlotProps {
-  /** AdSense管理画面で発行した広告ユニットのスロットID（空ならプレースホルダー） */
+  /** AdSense管理画面で発行した広告ユニットのスロットID（空なら非表示） */
   slot?: string;
   className?: string;
-  /** 広告未設定時に表示するプレースホルダーの説明文 */
+  /** 開発時だけ出すプレースホルダーの説明文 */
   placeholderLabel?: string;
 }
 
 /**
  * 広告枠（1つ分のバナー）を表示するコンポーネント。
- * パブリッシャーID（NEXT_PUBLIC_ADSENSE_CLIENT）が設定されていれば本物の広告を、
- * 未設定なら「枠の位置がわかるプレースホルダー」を表示する。
+ * パブリッシャーIDとスロットIDが揃っているときだけ本物の広告を出す。
+ * 未設定なら本番では何も出さない（空の「広告スペース」枠は出さない）。
  */
 export function AdSlot({
   slot,
@@ -41,13 +41,14 @@ export function AdSlot({
     }
   }, [hasValidSlot]);
 
-  // スロットID未設定のときは、配置を確認できるプレースホルダーを表示する
+  // スロット未設定は本番では非表示。開発中だけ配置確認用の枠を出す
   if (!ADSENSE_CLIENT || !hasValidSlot) {
+    if (process.env.NODE_ENV !== "development") return null;
     return (
       <div className={cn("my-8", className)}>
         <div className="flex min-h-[72px] items-center justify-center rounded-md border border-dashed border-border bg-muted/40 px-4 text-center text-xs text-muted-foreground">
           {placeholderLabel}
-          （AdSense管理画面で広告ユニットを作成し、スロットIDを設定すると表示されます）
+          （開発用。Vercel に NEXT_PUBLIC_ADSENSE_SLOT_* を入れると本番で表示されます）
         </div>
       </div>
     );
