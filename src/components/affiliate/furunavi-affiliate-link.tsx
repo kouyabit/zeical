@@ -13,6 +13,7 @@ interface FurunaviAffiliateLinkProps {
 /**
  * ふるなび向けアフィリエイトリンク。
  * 外部 VC URL ではなく同一サイトの /out/* 経由にし、Referer 付きで VC へ渡す。
+ * VC の中間ページは JS 依存のため、新しいタブではなく同じタブで開く。
  */
 export function FurunaviAffiliateLink({
   path,
@@ -22,13 +23,13 @@ export function FurunaviAffiliateLink({
   return (
     <a
       href={path}
-      target="_blank"
-      rel="nofollow sponsored noopener"
+      rel="nofollow sponsored"
       data-aff="furunavi"
       onClick={() =>
         sendGaEvent("affiliate_click", {
           affiliate_provider: "furunavi",
           link_url: path,
+          transport_type: "beacon",
         })
       }
       className={cn(className)}
