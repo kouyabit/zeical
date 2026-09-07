@@ -33,8 +33,21 @@ npm run dev
 | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | OGPやsitemapの絶対URL |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics 4 の測定ID |
+| `NEXT_PUBLIC_ADSENSE_CLIENT` | AdSense のパブリッシャーID（例: `ca-pub-...`） |
+| `NEXT_PUBLIC_ADSENSE_SLOT_RESULT` | 計算結果下の広告ユニットID（数字のみ。空なら非表示） |
+| `NEXT_PUBLIC_ADSENSE_SLOT_STICKY` | 画面下部固定バーの広告ユニットID（数字のみ。空なら非表示） |
+| `NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE` | 記事本文下の広告ユニットID（数字のみ。空なら非表示） |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase のプロジェクトURL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase の匿名キー |
+
+### Google AdSense（Vercel）
+
+広告ユニットを出すには、AdSense 管理画面でスロットIDを発行し、Vercel の環境変数に入れて**再デプロイ**します。架空のIDは入れないでください。空のままだと広告枠は出ません（壊れた空枠は表示しません）。
+
+1. [AdSense](https://www.google.com/adsense/) の「広告 > 広告ユニット」でユニットを作成する
+2. Vercel プロジェクト `zeical` の **Settings > Environment Variables** を開く
+3. `NEXT_PUBLIC_ADSENSE_CLIENT`（`ca-pub-5820360156544018`）と、使う枠の `NEXT_PUBLIC_ADSENSE_SLOT_RESULT` / `STICKY` / `ARTICLE` を追加する
+4. Production（必要なら Preview）に適用して再デプロイする。`NEXT_PUBLIC_*` はビルド時に埋め込まれるため、変数だけ変えても反映されません
 
 ## よく使うコマンド
 

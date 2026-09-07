@@ -52,7 +52,16 @@ export const FURUNAVI_VC_REFERRAL = buildVcAffiliateUrl(
 /** VC公式バナーの href（vc_url 付き。Next.js では jsbanner 未使用のため明示が必要） */
 export const FURUNAVI_VC_BANNER_HREF = FURUNAVI_VC_REFERRAL;
 
-/** VC公式バナー（gifbanner）の img src */
+/**
+ * ふるなびバナー画像（自前ホスト）。
+ * VC の gifbanner は広告ブロッカーやトラッキング制限で <img> が壊れるため、
+ * public/ に置いた公式バナーを使う。クリック先は /out/furunavi のまま。
+ */
+export const FURUNAVI_BANNER_SRC = "/images/affiliates/furunavi-banner.png";
+export const FURUNAVI_BANNER_WIDTH = 120;
+export const FURUNAVI_BANNER_HEIGHT = 60;
+
+/** VC公式バナー（gifbanner）。img src には使わない（ブロッカー対策） */
 export const FURUNAVI_VC_BANNER_SRC = buildVcBannerSrc(
   FURUNAVI_VC_SID,
   FURUNAVI_VC_PID,

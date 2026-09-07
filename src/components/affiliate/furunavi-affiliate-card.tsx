@@ -1,8 +1,12 @@
-import { FURUNAVI_VC_BANNER_SRC } from "@/lib/affiliate-config";
+import {
+  FURUNAVI_BANNER_HEIGHT,
+  FURUNAVI_BANNER_SRC,
+  FURUNAVI_BANNER_WIDTH,
+} from "@/lib/affiliate-config";
 import { Card, CardContent } from "@/components/ui/card";
 import { FurunaviAffiliateLink } from "./furunavi-affiliate-link";
 
-/** ふるなび VC バナー（クリックは /out/furunavi 経由） */
+/** ふるなび PR カード（画像は自前ホスト、クリックは /out/furunavi 経由） */
 export function FurunaviAffiliateCard() {
   return (
     <Card className="flex h-full flex-col">
@@ -12,10 +16,10 @@ export function FurunaviAffiliateCard() {
           className="flex w-full flex-col items-center gap-2 text-center"
         >
           <img
-            src={FURUNAVI_VC_BANNER_SRC}
+            src={FURUNAVI_BANNER_SRC}
             alt="ふるなび（PR・広告）"
-            width={234}
-            height={60}
+            width={FURUNAVI_BANNER_WIDTH}
+            height={FURUNAVI_BANNER_HEIGHT}
             loading="lazy"
             decoding="async"
             className="h-auto max-w-full"
